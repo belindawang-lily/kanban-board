@@ -1,6 +1,8 @@
 name: Sync & Deploy
 
 on:
+  push:
+    branches: [main]
   schedule:
     # 北京时间每天 8:00 和 20:00 自动同步
     - cron: '0 0,12 * * *'
@@ -39,7 +41,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No data changes."
           else
-            git commit -m "data: auto-sync $(date -u '+%Y-%m-%d %H:%M') UTC"
+            git commit -m "data: auto-sync $(date -u '+%Y-%m-%d %H:%M') UTC [skip ci]"
             git push
           fi
 
@@ -52,6 +54,9 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # 检出 main 最新提交（含 sync job 刚推送的数据），否则部署的永远是上一轮同步结果
+          ref: main
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
