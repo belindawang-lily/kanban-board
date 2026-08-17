@@ -18,36 +18,29 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.commit.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Sync Feishu Data
-        working-directory: kanban-board
         env:
           FEISHU_APP_ID: ${{ secrets.FEISHU_APP_ID }}
           FEISHU_APP_SECRET: ${{ secrets.FEISHU_APP_SECRET }}
         run: node scripts/sync-feishu-api.mjs
 
       - name: Commit & Push
-        id: commit
-        working-directory: kanban-board
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add assets/js/data.js
           if git diff --cached --quiet; then
-            echo "changed=false" >> $GITHUB_OUTPUT
             echo "No data changes."
           else
             git commit -m "data: auto-sync $(date -u '+%Y-%m-%d %H:%M') UTC"
             git push
-            echo "changed=true" >> $GITHUB_OUTPUT
           fi
 
   deploy:
@@ -66,7 +59,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: kanban-board
+          path: .
 
       - name: Deploy to GitHub Pages
         id: deploy
