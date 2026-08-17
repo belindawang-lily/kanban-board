@@ -130,9 +130,9 @@
     return html;
   };
   K.photoThumb = (filename) => `<div class="photo-thumb">${K.icon('image', 22)}<div class="ph-name">${K.escape(filename)}</div></div>`;
-  K.statCard = ({ label, value, unit, foot, ico, icoColor }) => `
-    <div class="stat">
-      <div class="stat-label">${ico ? `<span class="stat-ico" style="${icoColor ? `background:hsl(${icoColor} / 0.15);color:hsl(${icoColor})` : ''}">${ico}</span>` : ''}${K.escape(label)}</div>
+  K.statCard = ({ label, value, unit, foot, ico, icoColor, variant }) => `
+    <div class="stat ${variant ? 'is-' + variant : ''}">
+      <div class="stat-label">${ico ? `<span class="stat-ico" style="${icoColor ? `background:hsl(${icoColor} / 0.12);color:hsl(${icoColor})` : ''}">${ico}</span>` : ''}${K.escape(label)}</div>
       <div class="stat-value">${value}${unit ? `<span class="unit">${K.escape(unit)}</span>` : ''}</div>
       ${foot ? `<div class="stat-foot">${foot}</div>` : ''}
     </div>`;
@@ -227,6 +227,158 @@
   K.feishuTip = function (tableKey, action) {
     K.toast(`${action}：已打开飞书多维表格，请在对应表中操作。`, 'info');
     K.openFeishu(tableKey);
+  };
+
+  /* ---------- 图表组件 ---------- */
+
+  // 环形图（Donut Chart）— 用于 OKR 状态分布
+  K.donut = function (data, opts) {
+    opts = opts || {};
+    const total = data.reduce((a, d) => a + d.value, 0) || 1;
+    const size = opts.size || 120;
+    const r = size / 2;
+    const stroke = opts.stroke || 18;
+    const radius = r - stroke / 2;
+    const cx = r, cy = r;
+    const circumference = 2 * Math.PI * radius;
+
+    let offset = 0;
+    let segments = '';
+    data.forEach((d, i) => {
+      const pct = d.value / total;
+      const len = pct * circumference;
+      const dash = `${len} ${circumference - len}`;
+      const dashoffset = -offset;
+      segments += `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="hsl(${d.color})" stroke-width="${stroke}" stroke-dasharray="${dash}" stroke-dashoffset="${dashoffset}" transform="rotate(-90 ${cx} ${cy})" style="transition: stroke-dasharray 0.5s ease"/>`;
+      offset += len;
+    });
+
+    const centerVal = opts.centerVal != null ? opts.centerVal : total;
+    const centerLabel = opts.centerLabel || '';
+    const legend = data.map(d => {
+      const pct = Math.round(d.value / total * 100);
+      return `<div class="dl-row">
+        <span class="dl-sw" style="background:hsl(${d.color})"></span>
+        <span class="dl-label">${K.escape(d.label)}</span>
+        <span class="dl-val">${d.value}</span>
+        <span class="dl-pct">${pct}%</span>
+      </div>`;
+    }).join('');
+
+    return `<div class="donut-wrap">
+      <div class="donut" style="width:${size}px;height:${size}px">
+        <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="position:absolute;inset:0">
+          <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="hsl(var(--muted))" stroke-width="${stroke}" opacity="0.3"/>
+          ${segments}
+        </svg>
+        <div class="donut-center">
+          <div class="dc-val">${centerVal}</div>
+          ${centerLabel ? `<div class="dc-label">${K.escape(centerLabel)}</div>` : ''}
+        </div>
+      </div>
+      <div class="donut-legend">${legend}</div>
+    </div>`;
+  };
+
+  // 热力图（Heatmap）— 用于打卡活跃度
+  K.heatmap = function (checkins, opts) {
+    opts = opts || {};
+    const weeks = opts.weeks || 12; // 最近 12 周
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(startDate.getDate() - (weeks * 7 - 1));
+    // 对齐到周一
+    const dayOfWeek = startDate.getDay() || 7;
+    startDate.setDate(startDate.getDate() - dayOfWeek + 1);
+
+    // 统计每天打卡数
+    const dateCount = {};
+    checkins.forEach(c => {
+      if (!c.date) return;
+      const d = c.date.slice(0, 10);
+      dateCount[d] = (dateCount[d] || 0) + 1;
+    });
+
+    // 生成网格
+    const dayLabels = ['一', '二', '三', '四', '五', '六', '日'];
+    const maxCount = Math.max(1, ...Object.values(dateCount));
+    let rows = '';
+    for (let dow = 0; dow < 7; dow++) {
+      let cells = '';
+      for (let w = 0; w < weeks; w++) {
+        const d = new Date(startDate);
+        d.setDate(d.getDate() + w * 7 + dow);
+        if (d > today) {
+          cells += '<div class="heatmap-cell" style="opacity:0.3"></div>';
+          continue;
+        }
+        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        const count = dateCount[ds] || 0;
+        let level = '';
+        if (count > 0) {
+          const ratio = count / maxCount;
+          if (ratio > 0.75) level = 'l4';
+          else if (ratio > 0.5) level = 'l3';
+          else if (ratio > 0.25) level = 'l2';
+          else level = 'l1';
+        }
+        cells += `<div class="heatmap-cell ${level}" title="${ds}: ${count}次打卡"></div>`;
+      }
+      rows += `<div class="heatmap-row"><span class="heatmap-label">${dayLabels[dow]}</span>${cells}</div>`;
+    }
+
+    // 周标签
+    let weekLabels = '';
+    for (let w = 0; w < weeks; w++) {
+      const d = new Date(startDate);
+      d.setDate(d.getDate() + w * 7);
+      const label = `${d.getMonth()+1}.${d.getDate()}`;
+      weekLabels += `<span>${label}</span>`;
+    }
+
+    return `<div class="heatmap">
+      <div class="heatmap-weeks">${weekLabels}</div>
+      ${rows}
+    </div>`;
+  };
+
+  // 趋势折线图 — 用于双周报提交趋势
+  K.trendLine = function (data, opts) {
+    opts = opts || {};
+    if (!data.length) return '<div class="text-muted text-sm" style="padding:20px;text-align:center">暂无趋势数据</div>';
+
+    const w = opts.width || 100;
+    const h = opts.height || 80;
+    const max = Math.max(...data.map(d => d.value), 1);
+    const min = 0;
+    const range = max - min || 1;
+
+    const pointSpacing = data.length > 1 ? w / (data.length - 1) : 0;
+    const points = data.map((d, i) => ({
+      x: i * pointSpacing,
+      y: h - ((d.value - min) / range) * (h - 10) - 5,
+      ...d
+    }));
+
+    // 折线路径
+    const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+    const areaPath = linePath + ` L ${points[points.length-1].x.toFixed(1)} ${h} L ${points[0].x.toFixed(1)} ${h} Z`;
+
+    const dots = points.map((p, i) => {
+      const isLast = i === points.length - 1;
+      return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${isLast ? 4 : 3}" class="trend-dot ${isLast ? 'active' : ''}"/>`;
+    }).join('');
+
+    const labels = data.map(d => `<span>${K.escape(d.label || '')}</span>`).join('');
+
+    return `<div class="trend-chart">
+      <svg class="trend-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <path d="${areaPath}" class="trend-area"/>
+        <path d="${linePath}" class="trend-line"/>
+        ${dots}
+      </svg>
+      <div class="trend-labels">${labels}</div>
+    </div>`;
   };
 
   /* ---------- 导出/打印 ---------- */
