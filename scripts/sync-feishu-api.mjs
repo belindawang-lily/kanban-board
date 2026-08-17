@@ -123,18 +123,19 @@ function linkIds(v) {
 function dateOnly(v) {
   if (v == null) return '';
   if (typeof v === 'number') {
-    const d = new Date(v < 1e12 ? v * 1000 : v);
+    // 按北京时间(UTC+8)解析，避免 UTC 服务器上日期少一天
+    const b = new Date((v < 1e12 ? v * 1000 : v) + 8 * 3600 * 1000);
     const p = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    return `${b.getUTCFullYear()}-${p(b.getUTCMonth() + 1)}-${p(b.getUTCDate())}`;
   }
   return String(v).slice(0, 10);
 }
 function dt(v) {
   if (v == null) return '';
   if (typeof v === 'number') {
-    const d = new Date(v < 1e12 ? v * 1000 : v);
+    const b = new Date((v < 1e12 ? v * 1000 : v) + 8 * 3600 * 1000);
     const p = (n) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    return `${b.getUTCFullYear()}-${p(b.getUTCMonth() + 1)}-${p(b.getUTCDate())} ${p(b.getUTCHours())}:${p(b.getUTCMinutes())}`;
   }
   return String(v).slice(0, 16);
 }
