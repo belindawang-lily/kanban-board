@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>队伍管理 · 投资管理训练营运营进度看板</title>
+<link rel="stylesheet" href="assets/css/kanban.css">
+<style>
+  /* 本页专属：左右分栏 + 队伍卡片 + 成员名册 + danger 按钮 */
+  .team-layout { grid-template-columns: 1fr 1.6fr; align-items: start; }
+  .team-detail-panel { max-height: calc(100vh - 130px); overflow-y: auto; padding-right: 4px; }
+  .team-detail-panel::-webkit-scrollbar { width: 5px; }
+  .team-detail-panel::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
+  @media (max-width: 980px) {
+    .team-layout { grid-template-columns: 1fr; }
+    .team-list-wrap { position: static !important; max-height: none !important; }
+    .team-detail-panel { max-height: none !important; overflow: visible !important; }
+  }
+  .team-list-wrap { position: sticky; top: 88px; max-height: calc(100vh - 110px); overflow-y: auto; }
+
+  /* ---- 队伍列表卡片 ---- */
+  .team-row {
+    display: block; padding: 12px 14px; border-bottom: 1px solid hsl(var(--border) / 0.6);
+    cursor: pointer; transition: background 0.12s; border-left: 3px solid transparent;
+  }
+  .team-row:hover { background: hsl(var(--accent) / 0.14); }
+  .team-row.active { background: hsl(var(--accent) / 0.22); border-left-color: hsl(var(--primary)); }
+  .team-row.active .team-row-name { color: hsl(var(--primary)); }
+  .team-row-head { display: flex; align-items: center; gap: 8px; }
+  .team-row-head .status { margin-left: auto; }
+  .team-row-name { font-family: var(--font-display); font-weight: 600; font-size: 14.5px; }
+  .team-row-topic { font-size: 12px; color: hsl(var(--muted-foreground)); margin-top: 4px; }
+  .team-row-foot { display: flex; align-items: center; gap: 7px; margin-top: 8px; font-size: 12px; color: hsl(var(--foreground) / 0.8); justify-content: space-between; }
+  .team-row-foot .text-muted { color: hsl(var(--muted-foreground)); }
+  .team-row-bar { height: 3px; border-radius: var(--r-pill); background: hsl(var(--muted)); margin-top: 9px; overflow: hidden; }
+  .team-row-bar > i { display: block; height: 100%; border-radius: var(--r-pill); background: hsl(var(--primary)); }
+  .team-row.active .team-row-bar > i { background: hsl(var(--accent)); }
+
+  /* ---- 队伍详情头 ---- */
+  .team-hero { position: relative; overflow: hidden; }
+  .team-hero::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--accent))); }
+  .team-head-card { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .team-head-card .team-title { flex: 1; min-width: 220px; }
+  .team-head-card h2 { font-size: 1.25rem; }
+  .team-head-card .team-topic { font-size: 12px; color: hsl(var(--muted-foreground)); margin-top: 3px; }
+  .team-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 12px; }
+  .team-meta .tm-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: hsl(var(--muted) / 0.4); border-radius: var(--r-panel); }
+  .team-meta .tm-visual { width: 28px; height: 28px; display: grid; place-items: center; flex-shrink: 0; }
+  .team-meta .tm-ico { width: 28px; height: 28px; border-radius: var(--r-sm); display: grid; place-items: center; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); color: hsl(var(--primary)); }
+  .team-meta .tm-label { font-size: 10px; color: hsl(var(--muted-foreground)); line-height: 1.1; }
+  .team-meta .tm-val { font-size: 12px; font-weight: 600; line-height: 1.2; margin-top: 1px; }
+
+  /* ---- 身份分布卡 ---- */
+  .id-dist { display: flex; flex-direction: column; gap: 10px; }
+  .id-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--r-panel); background: hsl(var(--muted) / 0.35); border: 1px solid hsl(var(--border) / 0.5); transition: border-color 0.15s; }
+  .id-row:hover { border-color: hsl(var(--border)); }
+  .id-row-label { display: flex; align-items: center; gap: 8px; flex: 0 0 110px; }
+  .id-row-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .id-row-name { font-size: 13px; font-weight: 600; }
+  .id-row-bar { flex: 1; height: 8px; border-radius: var(--r-pill); background: hsl(var(--muted) / 0.6); overflow: hidden; }
+  .id-row-bar > i { display: block; height: 100%; border-radius: var(--r-pill); transition: width 0.4s ease; }
+  .id-row-vals { display: flex; align-items: baseline; gap: 6px; flex: 0 0 auto; }
+  .id-row-num { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; line-height: 1; }
+  .id-row-foot { font-size: 10.5px; color: hsl(var(--muted-foreground)); white-space: nowrap; }
+  .id-row-pct { font-size: 11px; color: hsl(var(--muted-foreground)); font-variant-numeric: tabular-nums; flex: 0 0 36px; text-align: right; }
+
+  /* ---- 角色徽标 ---- */
+  .chip-accent { background: hsl(var(--accent) / 0.14); color: hsl(var(--accent)); }
+  .chip-primary { background: hsl(var(--primary) / 0.1); color: hsl(var(--primary)); }
+
+  /* ---- 成员名册：参与次数 ---- */
+  .cnt-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .cnt-pill { display: inline-block; min-width: 26px; text-align: center; padding: 2px 8px; border-radius: var(--r-pill); background: hsl(var(--primary) / 0.1); color: hsl(var(--primary)); font-variant-numeric: tabular-nums; font-weight: 600; font-size: 12px; }
+  .cnt-pill.cnt-zero { background: hsl(var(--muted)); color: hsl(var(--muted-foreground)); }
+  .cnt-bar { display: block; width: 48px; height: 4px; border-radius: var(--r-pill); background: hsl(var(--muted)); overflow: hidden; }
+  .cnt-bar > i { display: block; height: 100%; border-radius: var(--r-pill); background: hsl(var(--c-doing)); }
+
+  /* ---- 表头排序 ---- */
+  .sortable { cursor: pointer; user-select: none; }
+  .sortable:hover { color: hsl(var(--foreground)); }
+  .sortable .sort-ico { opacity: 0.4; margin-left: 3px; vertical-align: middle; }
+
+  /* ---- danger ---- */
+  .btn-danger { border-color: hsl(var(--c-risk) / 0.45); color: hsl(var(--c-risk)); background: hsl(var(--c-risk) / 0.06); }
+  .btn-danger:hover { background: hsl(var(--c-risk) / 0.12); border-color: hsl(var(--c-risk)); }
+  .danger-zone { margin-top: 14px; padding: 14px 18px; border: 1px dashed hsl(var(--c-risk) / 0.4); border-radius: var(--r-panel); display: flex; align-items: center; gap: 12px; }
+  .danger-zone .dz-text { flex: 1; }
+  .danger-zone .dz-title { font-size: 13px; font-weight: 600; color: hsl(var(--c-risk)); }
+  .danger-zone .dz-desc { font-size: 11.5px; color: hsl(var(--muted-foreground)); margin-top: 2px; }
+  .readonly-hint { display: flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: var(--r-sm); background: hsl(var(--muted) / 0.5); font-size: 12px; color: hsl(var(--muted-foreground)); margin-bottom: 14px; }
+  .readonly-hint svg { width: 15px; height: 15px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  // ---- 工具栏按钮（权限感知）----
+  let tools = '';
+  if (K.canManage()) {
+    tools += '<button class="btn btn-primary btn-sm" onclick="K.feishuTip(\'teams\',\'新建队伍\')">' + K.icon('plus', 15) + ' 新建队伍</button>';
+  }
+  tools += '<button class="btn btn-outline btn-sm" onclick="exportMemberList()">' + K.icon('download', 15) + ' 导出名单</button>';
+
+  const view = K.mount('teams', {
+    title: '队伍管理',
+    crumb: '新建/解散队伍 · 指定队长 · 成员与身份管理',
+    tools: tools
+  });
+
+  const teams = K.teams();
+  const params = new URLSearchParams(location.search);
+  let selId = params.get('team');
+  if (!selId || !K.team(selId)) selId = teams.length ? teams[0].id : null;
+  const team = selId ? K.team(selId) : null;
+
+  // ---- 累计参与次数：该成员在所属队伍 checkins.teamParticipantIds 中的出现次数 ----
+  const partCountOf = (memberId, teamId) => {
+    return K.checkins(teamId).filter(c => (c.teamParticipantIds || []).indexOf(memberId) !== -1).length;
+  };
+
+  // 队伍状态徽标（"运转中"视为进行中色调，复用 K.statusChip）
+  const teamStatusChip = (s) => K.statusChip(s === '运转中' ? '进行中' : s);
+  // 身份 → 颜色 token
+  const idToken = (identity) => ({ '成员': '--id-member', '志愿者': '--id-volunteer', '内部导师': '--id-mentor-in', '外部导师': '--id-mentor-out' }[identity] || '--id-member');
+  // 角色徽标：队长高亮
+  const roleChip = (role) => role === '队长'
+    ? '<span class="chip chip-accent">' + K.escape(role) + '</span>'
+    : '<span class="chip">' + K.escape(role) + '</span>';
+
+  let html = '';
+
+  // ---- 主布局：左列表 + 右详情 ----
+  html += '<div class="grid team-layout">';
+
+  // ===== 左：队伍列表 =====
+  html += '<div class="card card-flush team-list-wrap"><div class="card-head"><h2>队伍列表</h2><div class="head-spacer"></div><span class="text-muted text-sm">' + teams.length + ' 支</span></div><div class="card-body">';
+  if (!teams.length) {
+    html += '<div class="empty">' + K.icon('users', 40) + '<div>暂无队伍数据</div></div>';
+  } else {
+    teams.forEach(t => {
+      const active = t.id === selId ? ' active' : '';
+      const prog = K.teamProgress(t.id);
+      html += '<div class="team-row' + active + '" onclick="location.href=\'team-management.html?team=' + encodeURIComponent(t.id) + '\'">';
+      html += '<div class="team-row-head"><span class="team-row-name">' + K.escape(t.name) + '</span>' + teamStatusChip(t.status) + '</div>';
+      html += '<div class="team-row-topic truncate">课题 · ' + K.escape(t.topic) + '</div>';
+      html += '<div class="team-row-foot">';
+      html += '<span class="flex items-center gap-2">' + K.avatar(t.leader, 'sm') + '<span>' + K.escape(t.leader) + '</span></span>';
+      html += '<span class="flex items-center gap-2 text-muted"><span class="tnum">' + t.memberCount + ' 人</span><span>·</span><span class="tnum">' + prog + '%</span></span>';
+      html += '</div>';
+      html += '<div class="team-row-bar"><i style="width:' + prog + '%"></i></div>';
+      html += '</div>';
+    });
+  }
+  html += '</div></div>';
+
+  // ===== 右：选中队伍详情（可滚动容器）=====
+  html += '<div class="team-detail-panel">';
+
+  if (!team) {
+    html += '<div class="card card-pad"><div class="empty">' + K.icon('users', 40) + '<div>未选中队伍或数据为空</div><div class="text-sm mt-2">请在左侧选择一支队伍查看详情</div></div></div>';
+  } else {
+    const members = K.members(team.id);
+    const idStats = K.identityStats(team.id);
+    const teamCheckins = K.checkins(team.id);
+    const teamProg = K.teamProgress(team.id);
+
+    // --- 队伍详情头 ---
+    html += '<div class="card card-pad mb-4 team-hero">';
+    html += '<div class="team-head-card">';
+    html += '<div class="team-title">';
+    html += '<div class="flex items-center gap-2">' + teamStatusChip(team.status) + '<span class="chip chip-primary">进度 ' + teamProg + '%</span></div>';
+    html += '<h2 class="mt-2">' + K.escape(team.name) + '</h2>';
+    html += '<div class="team-topic">课题：' + K.escape(team.topic) + '</div>';
+    html += '</div>';
+    if (K.canEdit()) {
+      html += '<button class="btn btn-outline btn-sm" onclick="K.feishuTip(\'teams\',\'编辑队伍信息\')">' + K.icon('edit', 15) + ' 编辑信息</button>';
+    }
+    html += '</div>';
+    // 元信息网格：队长 / 周期 / 成员 / 打卡
+    const metaItem = (label, val, visual) => '<div class="tm-item"><div class="tm-visual">' + visual + '</div><div class="tm-text"><div class="tm-label">' + label + '</div><div class="tm-val">' + val + '</div></div></div>';
+    html += '<div class="team-meta">';
+    html += metaItem('队长', K.escape(team.leader), K.avatar(team.leader, 'lg'));
+    html += metaItem('周期', K.fmt.date(team.cycleStart) + ' – ' + K.fmt.date(team.cycleEnd), '<span class="tm-ico">' + K.icon('clock', 16) + '</span>');
+    html += metaItem('成员', '<span class="tnum">' + members.length + '</span> 人', '<span class="tm-ico">' + K.icon('users', 16) + '</span>');
+    html += metaItem('打卡', '<span class="tnum">' + teamCheckins.length + '</span> 次', '<span class="tm-ico">' + K.icon('camera', 16) + '</span>');
+    html += '</div>';
+    html += '</div>';
+
+    // --- 成员名册 ---
+    html += '<div class="card card-flush mb-4"><div class="card-head"><h2>成员名册</h2><div class="head-spacer"></div>';
+    if (K.canEdit()) {
+      html += '<button class="btn btn-outline btn-sm" onclick="K.feishuTip(\'members\',\'添加成员\')">' + K.icon('plus', 15) + ' 添加成员</button>';
+    }
+    html += '</div><div class="card-body">';
+    if (!members.length) {
+      html += '<div class="empty">' + K.icon('users', 40) + '<div>该队伍暂无成员</div></div>';
+    } else {
+      // 参与次数最大值，用于迷你条比例
+      const maxCnt = members.reduce((mx, m) => Math.max(mx, partCountOf(m.id, team.id)), 0) || 1;
+      html += '<div class="table-wrap"><table class="table"><thead><tr>';
+      html += '<th>姓名</th>';
+      html += '<th>身份</th>';
+      html += '<th>角色</th>';
+      html += '<th>OA号</th>';
+      html += '<th class="text-right">累计参与</th>';
+      html += '</tr></thead><tbody>';
+      members.forEach(m => {
+        const cnt = partCountOf(m.id, team.id);
+        const pct = Math.round(cnt / maxCnt * 100);
+        const cntPill = cnt > 0
+          ? '<span class="cnt-pill">' + cnt + '</span>'
+          : '<span class="cnt-pill cnt-zero">0</span>';
+        html += '<tr>';
+        html += '<td class="cell-strong" style="border-left:3px solid hsl(var(' + idToken(m.identity) + '))"><div class="flex items-center gap-2">' + K.avatar(m.name, 'sm') + '<span>' + K.escape(m.name) + '</span></div></td>';
+        html += '<td>' + K.identityBadge(m.identity) + '</td>';
+        html += '<td>' + roleChip(m.role) + '</td>';
+        html += '<td class="cell-muted mono">' + K.escape(m.oa || '—') + '</td>';
+        html += '<td class="text-right"><div class="cnt-cell">' + cntPill + '<span class="cnt-bar"><i style="width:' + pct + '%"></i></span></div></td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+    }
+    html += '</div></div>';
+
+    // --- 身份分布 ---
+    const totalMembers = members.length || 1;
+    const maxIdCount = Math.max(1, ...idStats.map(s => s.count));
+    const idColors = { '成员': 'var(--id-member)', '志愿者': 'var(--id-volunteer)', '内部导师': 'var(--id-mentor-in)', '外部导师': 'var(--id-mentor-out)' };
+    html += '<div class="card card-pad mb-4"><div class="card-head" style="padding:0 0 12px;border:none"><h2>身份分布</h2><div class="head-spacer"></div><span class="text-muted text-sm">共 ' + members.length + ' 人</span></div>';
+    html += '<div class="id-dist">';
+    idStats.forEach(s => {
+      const pct = Math.round(s.count / totalMembers * 100);
+      const barPct = Math.round(s.count / maxIdCount * 100);
+      const color = idColors[s.identity] || 'var(--id-member)';
+      html += '<div class="id-row">';
+      html += '<div class="id-row-label"><span class="id-row-dot" style="background:hsl(' + color + ')"></span><span class="id-row-name">' + K.identityBadge(s.identity) + '</span></div>';
+      html += '<div class="id-row-bar"><i style="width:' + barPct + '%;background:hsl(' + color + ')"></i></div>';
+      html += '<div class="id-row-vals"><span class="id-row-num tnum">' + s.count + '</span><span class="id-row-foot">参与 ' + s.participation + ' 次</span></div>';
+      html += '<div class="id-row-pct">' + pct + '%</div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+
+    // --- 解散队伍（仅管理员）---
+    if (K.canManage()) {
+      html += '<div class="danger-zone">';
+      html += '<div class="dz-text"><div class="dz-title">解散队伍</div><div class="dz-desc">解散后将移除队伍及其关联数据，此操作不可撤销。</div></div>';
+      html += '<button class="btn btn-danger btn-sm" onclick="K.feishuTip(\'teams\',\'解散队伍\')">' + K.icon('alert', 15) + ' 解散队伍</button>';
+      html += '</div>';
+    }
+  }
+
+  html += '</div>'; // /team-detail-panel
+  html += '</div>'; // /team-layout
+
+  view.innerHTML = html;
+})();
+
+// ---------- 导出成员名单 CSV ----------
+function exportMemberList() {
+  const members = K.members();
+  const headers = ['队伍', '姓名', '身份', '角色', 'OA号'];
+  const rows = members.map(m => {
+    const t = K.team(m.teamId);
+    return [t ? t.name : '', m.name, m.identity, m.role || '队员', m.oa || ''];
+  });
+  K.exportCSV('训练营成员名单.csv', headers, rows);
+}
+</script>
+</body>
+</html>

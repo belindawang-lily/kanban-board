@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日常打卡 · 投资管理训练营运营进度看板</title>
+<link rel="stylesheet" href="assets/css/kanban.css">
+</head>
+<body>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  const teams = K.teams();
+  const params = new URLSearchParams(location.search);
+  const raw = params.get('team');
+  const isAll = raw === 'all' || !raw || !teams.some(t => t.id === raw);
+  let teamId = isAll ? '' : raw;
+
+  // 合并团队内参与人 + 志愿者参与人
+  const allParts = c => [...(c.teamParticipantIds || []), ...(c.volunteerParticipantIds || [])];
+  const partCount = c => allParts(c).length + (c.extraParticipants || []).length;
+
+  // 顶部工具
+  const teamOpts = teams.map(t =>
+    `<option value="${K.escape(t.id)}"${t.id === teamId ? ' selected' : ''}>${K.escape(t.name)}</option>`
+  ).join('');
+  let tools = `<select class="select" style="width:auto" onchange="location.href='checkin.html?team='+this.value">`
+    + `<option value="all"${isAll ? ' selected' : ''}>全部队伍</option>`
+    + teamOpts + `</select>`;
+  if (K.canEdit()) {
+    tools += `<button class="btn btn-primary btn-sm" onclick="K.feishuTip('checkins','新增打卡')">${K.icon('plus', 15)} 新增打卡</button>`;
+  }
+  if (K.canManage() || K.canEdit()) {
+    tools += `<button class="btn btn-outline btn-sm" onclick="exportCheckinStats()">${K.icon('download', 15)} 导出统计</button>`;
+  }
+
+  const view = K.mount('checkin', {
+    title: '日常打卡',
+    crumb: '研讨活动记录 · 按身份统计参与',
+    tools: tools
+  });
+
+  let html = '';
+
+  if (isAll) {
+    // ============ 全部队伍视图 ============
+    const allCheckins = K.checkins();
+    let gAct = allCheckins.length, gPt = 0, gPh = 0;
+    const gPid = new Set();
+    allCheckins.forEach(c => {
+      gPt += partCount(c);
+      gPh += (c.photos || []).length;
+      allParts(c).forEach(id => gPid.add(id));
+    });
+
+    html += '<div class="stat-grid mb-4">';
+    html += K.statCard({ label: '活动总数', value: gAct, foot: `覆盖 ${gPid.size} 位成员`, ico: K.icon('camera', 16), icoColor: '92 30% 40%' });
+    html += K.statCard({ label: '参与人次', value: gPt, foot: '含志愿者与其他参与人', ico: K.icon('users', 16), icoColor: '55 24% 49%' });
+    html += K.statCard({ label: '照片数', value: gPh, foot: '研讨现场记录', ico: K.icon('image', 16), icoColor: '28 70% 52%' });
+    html += K.statCard({ label: '覆盖成员数', value: gPid.size, foot: `共 ${teams.length} 支队伍`, ico: K.icon('check', 16), icoColor: '92 30% 40%' });
+    html += '</div>';
+
+    html += '<div class="card card-flush"><div class="card-head"><h2>各队伍打卡概览</h2><div class="head-spacer"></div><span class="text-muted text-sm">点击行查看队伍打卡时间线</span></div><div class="card-body"><div class="table-wrap"><table class="table"><thead><tr><th>队伍</th><th>队长</th><th class="text-right">活动数</th><th class="text-right">参与人次</th><th class="text-right">照片数</th><th>查看</th></tr></thead><tbody>';
+    if (!teams.length) {
+      html += '<tr><td colspan="6"><div class="empty">' + K.icon('camera', 40) + '<div>暂无队伍数据</div></div></td></tr>';
+    } else {
+      teams.forEach(t => {
+        const cs = K.checkins(t.id);
+        let pt = 0, ph = 0;
+        cs.forEach(c => {
+          pt += partCount(c);
+          ph += (c.photos || []).length;
+        });
+        html += `<tr class="row-link" onclick="location.href='checkin.html?team=${K.escape(t.id)}'" style="cursor:pointer">`;
+        html += `<td class="cell-strong">${K.escape(t.name)}</td>`;
+        html += `<td><div class="flex items-center gap-2">${K.avatar(t.leader, 'sm')}<span class="text-sm">${K.escape(t.leader)}</span></div></td>`;
+        html += `<td class="text-right tnum">${cs.length}</td>`;
+        html += `<td class="text-right tnum">${pt}</td>`;
+        html += `<td class="text-right tnum">${ph}</td>`;
+        html += `<td><span class="text-sm" style="color:hsl(var(--primary));font-weight:600;display:inline-flex;align-items:center;gap:4px">查看 ${K.icon('arrow', 12)}</span></td>`;
+        html += '</tr>';
+      });
+    }
+    html += '</tbody></table></div></div></div>';
+
+  } else {
+    // ============ 单队视图 ============
+    const team = K.team(teamId);
+    const teamName = team ? team.name : '—';
+    const checkins = K.checkins(teamId);
+
+    // 顶部统计
+    let participantTimes = 0, photoCount = 0;
+    const pidSet = new Set();
+    checkins.forEach(c => {
+      participantTimes += partCount(c);
+      photoCount += (c.photos || []).length;
+      allParts(c).forEach(id => pidSet.add(id));
+    });
+
+    html += '<div class="stat-grid mb-4">';
+    html += K.statCard({ label: '活动总数', value: checkins.length, foot: K.escape(teamName), ico: K.icon('camera', 16), icoColor: '92 30% 40%' });
+    html += K.statCard({ label: '参与人次', value: participantTimes, foot: '含志愿者与其他参与人', ico: K.icon('users', 16), icoColor: '55 24% 49%' });
+    html += K.statCard({ label: '照片数', value: photoCount, foot: '研讨现场记录', ico: K.icon('image', 16), icoColor: '28 70% 52%' });
+    html += K.statCard({ label: '覆盖成员数', value: pidSet.size, foot: `本队共 ${K.members(teamId).length} 位成员`, ico: K.icon('check', 16), icoColor: '92 30% 40%' });
+    html += '</div>';
+
+    // 主体：时间线 + 身份参与统计
+    html += '<div class="grid mb-4" style="grid-template-columns:1.55fr 1fr;align-items:start">';
+
+    // 打卡时间线
+    html += '<div class="card card-flush"><div class="card-head"><h2>打卡时间线</h2><div class="head-spacer"></div><span class="chip">' + K.escape(teamName) + '</span><span class="text-muted text-sm">' + checkins.length + ' 条记录</span></div><div class="card-body">';
+    if (!checkins.length) {
+      html += '<div class="empty">' + K.icon('camera', 40) + '<div>该队伍暂无打卡记录</div><div class="text-sm" style="margin-top:6px">完成研讨后可由本队成员新增打卡</div></div>';
+    } else {
+      const sorted = checkins.slice().sort((a, b) => (b.activityTime || '').localeCompare(a.activityTime || ''));
+      html += '<div class="timeline">';
+      sorted.forEach(c => {
+        const teamParts = c.teamParticipantIds || [];
+        const volParts = c.volunteerParticipantIds || [];
+        const totalPeople = teamParts.length + volParts.length + (c.extraParticipants || []).length;
+        html += '<div class="tl-item">';
+        html += '<div class="tl-dot" style="color:hsl(var(--accent))">' + K.icon('camera', 14) + '</div>';
+        html += '<div class="tl-body">';
+        // 头：时间
+        html += '<div class="flex items-center gap-2" style="margin-bottom:6px"><span style="font-weight:600">' + K.escape(K.fmt.datetime(c.activityTime)) + '</span>';
+        html += '<span class="text-muted text-sm">' + K.icon('clock', 12) + ' ' + (c.photos || []).length + ' 张照片 · ' + totalPeople + ' 人参与</span></div>';
+        // 内容
+        html += '<p style="margin:0 0 10px">' + K.escape(c.content) + '</p>';
+        // 照片
+        if ((c.photos || []).length) {
+          html += '<div class="photo-grid" style="margin-bottom:10px">';
+          (c.photos || []).forEach(p => { html += K.photoThumb(p); });
+          html += '</div>';
+        }
+        // 参与人：团队内 + 志愿者 + 其他
+        html += '<div class="flex items-center gap-3" style="flex-wrap:wrap">';
+        if (teamParts.length) {
+          html += K.avatarStack(teamParts);
+          html += '<span class="text-muted text-sm">团队成员 ' + teamParts.length + ' 人</span>';
+        }
+        if (volParts.length) {
+          html += '<span style="width:1px;height:20px;background:hsl(var(--border))"></span>';
+          html += K.avatarStack(volParts);
+          html += '<span class="text-muted text-sm">志愿者 ' + volParts.length + ' 人</span>';
+        }
+        if ((c.extraParticipants || []).length) {
+          html += '<span class="text-muted text-sm">+ 其他：' + (c.extraParticipants || []).map(K.escape).join('、') + '</span>';
+        }
+        html += '</div>';
+        html += '</div></div>';
+      });
+      html += '</div>';
+    }
+    html += '</div></div>';
+
+    // 身份参与统计
+    const idStats = K.identityStats(teamId);
+    const totalPart = idStats.reduce((a, x) => a + x.participation, 0) || 1;
+    const maxPart = Math.max(1, ...idStats.map(x => x.participation));
+    html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>身份参与统计</h2><div class="head-spacer"></div><span class="text-muted text-sm">按打卡参与人次</span></div>';
+    html += '<div class="table-wrap"><table class="table"><thead><tr><th>身份</th><th class="text-right">人数</th><th class="text-right">参与人次</th><th style="min-width:110px">占比</th></tr></thead><tbody>';
+    idStats.forEach(x => {
+      const pct = Math.round(x.participation / totalPart * 100);
+      html += '<tr><td>' + K.identityBadge(x.identity) + '</td><td class="text-right tnum">' + x.count + '</td><td class="text-right tnum">' + x.participation + '</td><td>' + K.progressHtml(pct, x.participation ? '进行中' : '未开始') + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+    // 柱状图
+    html += '<div class="bars" style="margin-top:16px">';
+    idStats.forEach(x => {
+      const h = Math.round(x.participation / maxPart * 100);
+      html += '<div class="bar-col"><div class="bar-val">' + x.participation + '</div><div class="bar" style="height:' + Math.max(6, h) + '%;background:hsl(' + K.colorFor(x.identity) + ')"></div><div class="bar-label">' + K.escape(x.identity) + '</div></div>';
+    });
+    html += '</div>';
+    if (totalPart <= 1 && idStats.every(x => !x.participation)) {
+      html += '<div class="empty" style="padding:18px 0">' + K.icon('users', 32) + '<div class="text-sm">暂无参与记录</div></div>';
+    }
+    html += '</div>';
+
+    html += '</div>'; // /grid
+  }
+
+  view.innerHTML = html;
+})();
+
+// ---------- 导出打卡统计 CSV ----------
+function exportCheckinStats() {
+  const params = new URLSearchParams(location.search);
+  const teamId = params.get('team');
+  const teams = K.teams();
+
+  if (!teamId) {
+    const headers = ['队伍', '队长', '成员数', '活动数', '参与人次', '照片数'];
+    const rows = teams.map(t => {
+      const cs = K.checkins(t.id);
+      const ms = K.members(t.id);
+      let pt = 0, ph = 0;
+      cs.forEach(c => {
+        pt += (c.teamParticipantIds || []).length + (c.volunteerParticipantIds || []).length + (c.extraParticipants || []).length;
+        ph += (c.photos || []).length;
+      });
+      return [t.name, t.leader, ms.length, cs.length, pt, ph];
+    });
+    K.exportCSV('打卡统计-按队伍.csv', headers, rows);
+  } else {
+    const team = K.team(teamId);
+    const members = K.members(teamId);
+    const checkins = K.checkins(teamId);
+    const headers = ['姓名', '身份', '角色', '队伍', '参与次数'];
+    const rows = members.map(m => {
+      let cnt = 0;
+      checkins.forEach(c => {
+        if ((c.teamParticipantIds || []).includes(m.id) || (c.volunteerParticipantIds || []).includes(m.id)) cnt++;
+      });
+      return [m.name, m.identity, m.role || '队员', team ? team.name : '', cnt];
+    });
+    const extraNames = new Set();
+    checkins.forEach(c => (c.extraParticipants || []).forEach(n => extraNames.add(n)));
+    extraNames.forEach(n => rows.push([n, '外部人员', '', team ? team.name : '', '']));
+    K.exportCSV(`打卡统计-${team ? team.name : ''}.csv`, headers, rows);
+  }
+}
+</script>
+</body>
+</html>

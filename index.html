@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>总看板 · 投资管理训练营运营进度看板</title>
+  <link rel="stylesheet" href="assets/css/kanban.css">
+</head>
+<body>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  const view = K.mount('overview', {
+    title: '总看板',
+    crumb: '全局汇总 · 各队伍现状一览',
+    tools: '<button class="btn btn-outline btn-sm" onclick="K.openFeishu()">' + K.icon('external', 15) + ' 打开飞书</button><button class="btn btn-outline btn-sm" onclick="K.toast(\'管理员运行同步脚本即可刷新：node scripts/sync-via-lark-cli.mjs\')">' + K.icon('refresh', 15) + ' 刷新数据</button>'
+  });
+
+  const D = K.data;
+  const teams = K.teams();
+  const krs = D.keyResults || [];
+  const reports = D.biweeklyReports || [];
+  const checkins = D.checkins || [];
+  const members = D.members || [];
+
+  // 最新双周期
+  const periodNum = (label) => { const m = /第(\d+)期/.exec(label || ''); return m ? +m[1] : 0; };
+  const maxPeriod = reports.reduce((a, r) => Math.max(a, periodNum(r.period)), 0);
+  const latestLabel = maxPeriod ? `第${maxPeriod}期` : '—';
+  const submittedTeamIds = new Set(reports.filter(r => periodNum(r.period) === maxPeriod).map(r => r.teamId));
+  const submitRate = teams.length ? Math.round(submittedTeamIds.size / teams.length * 100) : 0;
+
+  const avgProgress = krs.length ? Math.round(krs.reduce((a, k) => a + k.progress, 0) / krs.length) : 0;
+  const doingKRs = krs.filter(k => k.status === '进行中').length;
+  const riskKRs = krs.filter(k => k.status === '有风险').length;
+
+  // 身份统计
+  const idStats = K.identityStats();
+
+  // 打卡 Top（按次数）
+  const checkinTop = teams.map(t => ({ t, n: K.checkinCount(t.id) })).sort((a, b) => b.n - a.n).slice(0, 6);
+  const maxChk = Math.max(1, ...checkinTop.map(x => x.n));
+
+  // 打卡覆盖人次（合并队伍与志愿者参与者）
+  const checkinParticipants = new Set(checkins.flatMap(c => [...(c.teamParticipantIds || []), ...(c.volunteerParticipantIds || [])]));
+
+  // 状态分布
+  const statusDist = ['未开始', '进行中', '已完成', '有风险'].map(st => ({
+    st, n: krs.filter(k => k.status === st).length
+  }));
+  const statusColor = { '未开始': 'var(--c-todo)', '进行中': 'var(--c-doing)', '已完成': 'var(--c-done)', '有风险': 'var(--c-risk)' };
+
+  let html = '';
+
+  // ===== 分区一：核心指标 =====
+  html += '<div class="section-title"><h2>核心指标</h2><span class="hint">训练营整体运营概览</span></div>';
+  html += '<div class="stat-grid mb-4">';
+  html += K.statCard({ label: '队伍总数', value: teams.length, foot: `运转中 ${teams.filter(t => t.status === '运转中').length} 支`, ico: K.icon('users', 16) });
+  html += K.statCard({ label: '成员总数', value: members.length, foot: `成员${idStats[0].count} · 志愿者${idStats[1].count} · 导师${idStats[2].count + idStats[3].count}`, ico: K.icon('users', 16) });
+  html += K.statCard({ label: 'OKR 平均进度', value: avgProgress, unit: '%', foot: `${doingKRs} 个 KR 进行中 · ${riskKRs} 个有风险`, ico: K.icon('target', 16), icoColor: '55 24% 49%' });
+  html += K.statCard({ label: '本期双周报', value: `${submittedTeamIds.size}/${teams.length}`, foot: `${latestLabel} · 提交率 ${submitRate}%`, ico: K.icon('report', 16), icoColor: '28 70% 52%' });
+  html += K.statCard({ label: '打卡活动', value: checkins.length, foot: `覆盖 ${checkinParticipants.size} 人次参与`, ico: K.icon('camera', 16), icoColor: '92 30% 40%' });
+  html += K.statCard({ label: '有风险 KR', value: riskKRs, foot: riskKRs ? '需关注，见 OKR 管理' : '暂无风险项', ico: K.icon('alert', 16), icoColor: '12 78% 55%' });
+  html += '</div>';
+
+  // ===== 分区二：队伍进度与活跃度 =====
+  html += '<div class="section-title"><h2>队伍进度与活跃度</h2><span class="hint">点击队伍行查看 OKR 详情</span></div>';
+  html += '<div class="grid mb-4" style="grid-template-columns: 1.9fr 1fr">';
+  // 各队 OKR 进度表
+  html += '<div class="card card-flush"><div class="card-head"><h2>各队 OKR 进度总览</h2><div class="head-spacer"></div><span class="text-muted text-sm">平均进度 ' + avgProgress + '% · 共 ' + krs.length + ' 个 KR</span></div><div class="card-body"><div class="table-wrap"><table class="table"><thead><tr><th style="white-space:nowrap">队伍</th><th style="white-space:nowrap">队长</th><th class="text-right" style="white-space:nowrap">成员</th><th style="min-width:160px">OKR 进度</th><th class="text-right" style="white-space:nowrap">KR</th><th style="white-space:nowrap">最新双周报</th><th class="text-right" style="white-space:nowrap">打卡</th><th style="white-space:nowrap">状态</th></tr></thead><tbody>';
+  teams.forEach(t => {
+    const prog = K.teamProgress(t.id);
+    const tkrs = K.krs(t.id);
+    const rep = K.latestReport(t.id);
+    const row = `location.href='okr.html?team=${t.id}'`;
+    html += `<tr class="row-link" onclick="${row}" style="cursor:pointer">`;
+    html += `<td class="cell-strong" style="white-space:nowrap">${K.escape(t.name)}</td>`;
+    html += `<td><div class="flex items-center gap-2" style="white-space:nowrap">${K.avatar(t.leader, 'sm')}<span class="text-sm">${K.escape(t.leader)}</span></div></td>`;
+    html += `<td class="text-right tnum">${t.memberCount}</td>`;
+    html += `<td>${K.progressHtml(prog, prog === 100 ? '已完成' : prog === 0 ? '未开始' : '进行中')}</td>`;
+    html += `<td class="text-right tnum">${tkrs.length}</td>`;
+    html += `<td class="cell-muted text-sm" style="white-space:nowrap">${rep ? K.escape(rep.period) : '<span class="text-muted">未提交</span>'}</td>`;
+    html += `<td class="text-right tnum">${K.checkinCount(t.id)}</td>`;
+    html += `<td><span class="chip">${K.escape(t.status)}</span></td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table></div></div></div>';
+
+  // 打卡活跃度 Top 6（横向进度条，更易读）
+  html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 14px;border:none"><h2>打卡活跃度 Top 6</h2><div class="head-spacer"></div><span class="text-muted text-sm">按打卡次数</span></div>';
+  checkinTop.forEach(x => {
+    const pct = Math.round(x.n / maxChk * 100);
+    const col = K.colorFor(x.t.name);
+    html += `<div class="progress mb-2" style="gap:10px">`;
+    html += `<span class="text-sm" style="width:90px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${K.escape(x.t.name)}">${K.escape(x.t.name)}</span>`;
+    html += `<div class="pbar" style="height:10px"><div class="pfill" style="width:${Math.max(3, pct)}%;background:hsl(${col})"></div></div>`;
+    html += `<div class="pval" style="min-width:28px">${x.n}</div>`;
+    html += `</div>`;
+  });
+  html += '</div>';
+  html += '</div>';
+
+  // ===== 分区三：本期交付与参与 =====
+  html += '<div class="section-title"><h2>本期交付与参与</h2><span class="hint">双周报提交情况 · 身份参与分布</span></div>';
+  html += '<div class="grid grid-2">';
+  // 双周报提交情况
+  html += '<div class="card card-flush"><div class="card-head"><h2>本期双周报提交情况</h2><div class="head-spacer"></div><span class="chip">' + K.escape(latestLabel) + '</span></div><div class="card-body">';
+  html += '<div class="progress mb-3"><div class="pbar"><div class="pfill" style="width:'+submitRate+'%"></div></div><div class="pval">'+submitRate+'%</div></div>';
+  html += '<div class="table-wrap"><table class="table"><thead><tr><th>队伍</th><th>本期</th><th>记录人</th><th>状态</th></tr></thead><tbody>';
+  teams.forEach(t => {
+    const rep = reports.filter(r => r.teamId === t.id && periodNum(r.period) === maxPeriod)[0];
+    html += '<tr>';
+    html += `<td class="cell-strong">${K.escape(t.name)}</td>`;
+    html += `<td class="cell-muted text-sm">${rep ? K.escape(rep.period) : '—'}</td>`;
+    html += `<td class="text-sm">${rep ? K.escape(rep.recorder) : '—'}</td>`;
+    html += `<td>${rep ? K.statusChip('已完成') : '<span class="status status--todo"><span class="sdot"></span>未提交</span>'}</td>`;
+    html += '</tr>';
+  });
+  html += '</tbody></table></div></div></div>';
+
+  // 身份参与统计
+  html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>身份参与统计</h2><div class="head-spacer"></div><span class="text-muted text-sm">按打卡参与人次</span></div>';
+  html += '<div class="legend mb-3">';
+  statusDist.forEach(d => html += `<span class="lg"><span class="lg-sw" style="background:hsl(${statusColor[d.st]})"></span>${K.escape(d.st)} ${d.n}</span>`);
+  html += '</div>';
+  html += '<div class="table-wrap"><table class="table"><thead><tr><th>身份</th><th class="text-right">人数</th><th class="text-right">参与人次</th><th style="min-width:120px">占比</th></tr></thead><tbody>';
+  const totalPart = idStats.reduce((a, x) => a + x.participation, 0) || 1;
+  idStats.forEach(x => {
+    const pct = Math.round(x.participation / totalPart * 100);
+    html += `<tr><td>${K.identityBadge(x.identity)}</td><td class="text-right tnum">${x.count}</td><td class="text-right tnum">${x.participation}</td><td>${K.progressHtml(pct, '进行中')}</td></tr>`;
+  });
+  html += '</tbody></table></div></div>';
+  html += '</div>';
+
+  view.innerHTML = html;
+})();
+</script>
+</body>
+</html>

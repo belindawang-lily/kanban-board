@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKR 管理 · 投资管理训练营运营进度看板</title>
+<link rel="stylesheet" href="assets/css/kanban.css">
+</head>
+<body>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  const params = new URLSearchParams(location.search);
+  const teamFilter = params.get('team') || '';
+
+  const teams = K.teams();
+
+  // tools：队伍选择 + （本队可编辑时）新建目标
+  let toolsHtml = '<select class="select" onchange="location.href=\'okr.html?team=\'+this.value" style="width:auto;padding:6px 30px 6px 10px;font-size:12px">';
+  toolsHtml += `<option value="" ${teamFilter === '' ? 'selected' : ''}>全部队伍</option>`;
+  teams.forEach(t => {
+    toolsHtml += `<option value="${K.escape(t.id)}" ${teamFilter === t.id ? 'selected' : ''}>${K.escape(t.name)}</option>`;
+  });
+  toolsHtml += '</select>';
+  if (K.canEdit()) {
+    toolsHtml += `<button class="btn btn-primary btn-sm" onclick="K.feishuTip('objectives','新建目标')">${K.icon('plus', 15)} 新建目标</button>`;
+  }
+
+  const view = K.mount('okr', {
+    title: 'OKR 管理',
+    crumb: '目标与关键结果 · 进度与状态',
+    tools: toolsHtml
+  });
+
+  const canEdit = K.canEdit();
+  const statusList = ['未开始', '进行中', '已完成', '有风险'];
+  const statusColor = { '未开始': 'var(--c-todo)', '进行中': 'var(--c-doing)', '已完成': 'var(--c-done)', '有风险': 'var(--c-risk)' };
+
+  let html = '';
+
+  if (teamFilter && K.team(teamFilter)) {
+    /* ============ 单队视图 ============ */
+    const team = K.team(teamFilter);
+    const objs = K.objectives(teamFilter);
+    const krs = K.krs(teamFilter);
+    const avg = K.teamProgress(teamFilter);
+
+    // 1. 队伍 OKR 摘要
+    html += '<div class="grid mb-4" style="grid-template-columns: 1fr 1.4fr;gap:14px">';
+    // 左：平均进度大数字
+    html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>队伍 OKR 摘要</h2><div class="head-spacer"></div><span class="chip">' + K.escape(team.name) + '</span></div>';
+    html += `<div class="flex items-center gap-4" style="margin-bottom:14px"><div><div class="text-sm text-muted">平均进度</div><div class="font-display" style="font-size:2.6rem;font-weight:600;line-height:1">${avg}<span class="text-muted" style="font-size:1rem;font-weight:400;margin-left:3px">%</span></div></div><div style="flex:1;min-width:120px">${K.progressHtml(avg, avg === 100 ? '已完成' : avg === 0 ? '未开始' : '进行中')}</div></div>`;
+    html += `<div class="text-sm text-muted">目标 ${objs.length} 个 · 关键结果 ${krs.length} 个</div>`;
+    html += '</div>';
+    // 右：KR 状态分布
+    html += `<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>KR 状态分布</h2><div class="head-spacer"></div><span class="text-muted text-sm">共 ${krs.length} 个</span></div>`;
+    html += '<div class="legend" style="flex-direction:column;align-items:flex-start;gap:10px">';
+    statusList.forEach(st => {
+      const n = krs.filter(k => k.status === st).length;
+      html += `<span class="lg" style="font-size:13px"><span class="lg-sw" style="background:hsl(${statusColor[st]})"></span>${K.statusChip(st)} <span class="tnum" style="margin-left:4px">${n}</span></span>`;
+    });
+    html += '</div></div>';
+    html += '</div>';
+
+    // 2. OKR 树
+    if (!objs.length) {
+      html += '<div class="empty">' + K.icon('target', 40) + '<div>该队伍暂未设定目标与关键结果</div></div>';
+    } else {
+      html += '<div class="card card-flush mb-4"><div class="card-head"><h2>目标与关键结果</h2><div class="head-spacer"></div><span class="text-muted text-sm">O = Objective · KR = Key Result</span></div><div class="card-body" style="padding:16px 18px">';
+      html += '<div class="okr-tree">';
+      objs.forEach((o, oi) => {
+        const oKrs = K.krsOfObj(o.id);
+        html += '<div class="obj-block">';
+        html += '<div class="obj-head">';
+        html += `<span class="o-tag">O${oi + 1}</span>`;
+        html += `<span class="cell-strong" style="flex:1;font-size:14px">${K.escape(o.title)}</span>`;
+        html += `<span class="chip">${K.icon('users', 12)} 负责人 ${K.escape(o.owner || '—')}</span>`;
+        if (canEdit) {
+          html += `<button class="btn btn-outline btn-sm" onclick="K.feishuTip('objectives','编辑目标')">${K.icon('edit', 13)} 编辑</button>`;
+        }
+        html += '</div>';
+        html += '<div class="obj-list">';
+        if (!oKrs.length) {
+          html += '<div class="text-muted text-sm" style="padding:6px 12px">暂无关键结果</div>';
+        } else {
+          oKrs.forEach((k, ki) => {
+            html += '<div class="kr-row">';
+            html += `<span class="kr-tag">KR${ki + 1}</span>`;
+            html += `<span class="kr-title">${K.escape(k.title)}</span>`;
+            html += `<span style="min-width:140px">${K.progressHtml(k.progress, k.status)}</span>`;
+            html += `<span class="nowrap">${K.statusChip(k.status)}</span>`;
+            html += `<span class="text-muted text-sm nowrap">更新 ${K.fmt.date(k.updatedAt)}</span>`;
+            if (canEdit) {
+              html += `<button class="btn btn-ghost btn-sm" onclick="K.feishuTip('keyResults','编辑 KR')">${K.icon('edit', 13)} 编辑</button>`;
+            }
+            html += '</div>';
+          });
+        }
+        html += '</div>'; // obj-list
+        html += '</div>'; // obj-block
+      });
+      html += '</div>'; // okr-tree
+      html += '</div></div>';
+    }
+
+    // 3. 权限提示卡
+    html += '<div class="card card-pad" style="background:hsl(var(--muted) / 0.35);border-color:hsl(var(--border))">';
+    html += '<div class="flex items-center gap-3">';
+    html += `<span class="stat-ico" style="background:hsl(var(--accent) / 0.3);color:hsl(var(--accent-foreground));flex-shrink:0">${K.icon('check', 16)}</span>`;
+    html += '<div>';
+    html += `<div class="cell-strong text-sm">权限说明</div>`;
+    html += `<div class="text-sm text-muted mt-2">数据编辑请在飞书多维表格中操作，点击右上角「打开飞书」按钮。</div>`;
+    html += '</div></div></div>';
+
+  } else {
+    /* ============ 全部队伍总览视图 ============ */
+    const allObjs = K.objectives();
+    const allKrs = K.krs();
+    const avgProgress = allKrs.length ? Math.round(allKrs.reduce((a, k) => a + k.progress, 0) / allKrs.length) : 0;
+    const riskKRs = allKrs.filter(k => k.status === '有风险').length;
+
+    // 1. 统计卡行
+    html += '<div class="stat-grid mb-4">';
+    html += K.statCard({ label: '目标总数', value: allObjs.length, foot: `覆盖 ${teams.length} 支队伍`, ico: K.icon('target', 16), icoColor: '55 24% 49%' });
+    html += K.statCard({ label: 'KR 总数', value: allKrs.length, foot: `已完成 ${allKrs.filter(k => k.status === '已完成').length} · 进行中 ${allKrs.filter(k => k.status === '进行中').length}`, ico: K.icon('check', 16), icoColor: '92 30% 40%' });
+    html += K.statCard({ label: '平均进度', value: avgProgress, unit: '%', foot: '所有 KR 进度均值', ico: K.icon('arrow', 16), icoColor: '35 70% 52%' });
+    html += K.statCard({ label: '有风险 KR', value: riskKRs, foot: riskKRs ? '需关注，点击查看详情' : '暂无风险项', ico: K.icon('alert', 16), icoColor: '12 78% 55%' });
+    html += '</div>';
+
+    // 2. 队伍总览表格
+    if (!teams.length) {
+      html += '<div class="empty">' + K.icon('target', 40) + '<div>暂无队伍数据</div></div>';
+    } else {
+      html += '<div class="card card-flush"><div class="card-head"><h2>各队伍 OKR 总览</h2><div class="head-spacer"></div><span class="text-muted text-sm">点击「查看」进入单队 OKR 树</span></div><div class="card-body"><div class="table-wrap"><table class="table"><thead><tr><th>队伍</th><th class="text-right">目标数</th><th class="text-right">KR 数</th><th style="min-width:170px">平均进度</th><th class="text-right">有风险数</th><th class="text-right">操作</th></tr></thead><tbody>';
+      teams.forEach(t => {
+        const tObjs = K.objectives(t.id);
+        const tKrs = K.krs(t.id);
+        const tProg = K.teamProgress(t.id);
+        const tRisk = tKrs.filter(k => k.status === '有风险').length;
+        const row = `location.href='okr.html?team=${t.id}'`;
+        html += `<tr class="row-link" onclick="${row}" style="cursor:pointer">`;
+        html += `<td class="cell-strong">${K.escape(t.name)}</td>`;
+        html += `<td class="text-right tnum">${tObjs.length}</td>`;
+        html += `<td class="text-right tnum">${tKrs.length}</td>`;
+        html += `<td>${K.progressHtml(tProg, tProg === 100 ? '已完成' : tProg === 0 ? '未开始' : '进行中')}</td>`;
+        html += `<td class="text-right tnum">${tRisk > 0 ? `<span style="color:hsl(var(--c-risk));font-weight:600">${tRisk}</span>` : '0'}</td>`;
+        html += `<td class="text-right"><span class="btn btn-outline btn-sm" onclick="event.stopPropagation();location.href='okr.html?team=${t.id}'">${K.icon('arrow', 13)} 查看</span></td>`;
+        html += '</tr>';
+      });
+      html += '</tbody></table></div></div></div>';
+    }
+  }
+
+  view.innerHTML = html;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目快报 · 投资管理训练营运营进度看板</title>
+<link rel="stylesheet" href="assets/css/kanban.css">
+<style>
+  .brief-stats .stat { padding: 10px 10px; }
+  .brief-stats .stat-value { font-size: 1.25rem; }
+  .brief-stats .stat-label { font-size: 10.5px; }
+  .brief-stats .stat-foot { font-size: 9.5px; }
+  @media print { .no-print { display: none !important; } }
+</style>
+</head>
+<body>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  const D = K.data;
+  const meta = D.meta || {};
+  const allTeams = K.teams();
+
+  // —— 控件区 ——
+  const tools = ''
+    + '<div class="no-print" style="display:inline-flex;align-items:center;gap:8px">'
+    + '<button class="btn btn-outline btn-sm" onclick="K.briefGen(\'\')">' + K.icon('refresh', 15) + ' 生成整体快报</button>'
+    + '<select id="briefTeamSel" class="select btn-sm" style="width:auto;padding-top:5px;padding-bottom:5px" onchange="K.briefGen(this.value)" aria-label="单队快报">'
+    + '<option value="">单队快报…</option>'
+    + allTeams.map(function (t) { return '<option value="' + K.escape(t.id) + '">' + K.escape(t.name) + '</option>'; }).join('')
+    + '</select>'
+    + '<button class="btn btn-primary btn-sm" onclick="K.printPage()">' + K.icon('download', 15) + ' 导出PDF</button>'
+    + '</div>';
+
+  const view = K.mount('brief', { title: '项目快报', crumb: '一键生成 · 可编辑导出', tools: tools });
+
+  K.briefGen = function (teamId) {
+    view.innerHTML = renderBrief(teamId);
+    const sel = document.getElementById('briefTeamSel');
+    if (sel) sel.value = teamId || '';
+    K.toast(teamId ? '已生成单队阶段快报' : '已生成整体阶段快报');
+  };
+
+  const STATUSES = ['未开始', '进行中', '已完成', '有风险'];
+  const statusColor = { '未开始': 'var(--c-todo)', '进行中': 'var(--c-doing)', '已完成': 'var(--c-done)', '有风险': 'var(--c-risk)' };
+  const idColor = { '成员': 'var(--id-member)', '志愿者': 'var(--id-volunteer)', '内部导师': 'var(--id-mentor-in)', '外部导师': 'var(--id-mentor-out)' };
+
+  function biweeklyPeriods(start, end) {
+    if (!start || !end) return 0;
+    const s = new Date(start), e = new Date(end);
+    if (isNaN(s) || isNaN(e)) return 0;
+    return Math.max(1, Math.round((e - s) / 86400000 / 14));
+  }
+
+  function renderBrief(teamId) {
+    const isTeam = !!teamId;
+    const team = isTeam ? K.team(teamId) : null;
+    const teams = isTeam ? (team ? [team] : []) : K.teams();
+
+    const krs = isTeam ? K.krs(teamId) : (D.keyResults || []);
+    const objectives = isTeam ? K.objectives(teamId) : (D.objectives || []);
+    const members = isTeam ? K.members(teamId) : K.members();
+    const reports = isTeam ? K.reports(teamId) : (D.biweeklyReports || []);
+    const checkins = isTeam ? K.checkins(teamId) : (D.checkins || []);
+
+    const avgProgress = krs.length ? Math.round(krs.reduce((a, k) => a + k.progress, 0) / krs.length) : 0;
+    const dist = STATUSES.map(st => ({ st, n: krs.filter(k => k.status === st).length }));
+    const riskCount = dist.find(d => d.st === '有风险').n;
+    const doneCount = dist.find(d => d.st === '已完成').n;
+    const completionRate = krs.length ? Math.round(doneCount / krs.length * 100) : 0;
+
+    const totalPhotos = checkins.reduce((a, c) => a + (c.photos || []).length, 0);
+    const participation = checkins.reduce((a, c) => a + (c.teamParticipantIds || []).length + (c.volunteerParticipantIds || []).length + (c.extraParticipants || []).length, 0);
+    const coveredMembers = new Set(checkins.flatMap(c => [...(c.teamParticipantIds || []), ...(c.volunteerParticipantIds || [])])).size;
+
+    const periodsCount = biweeklyPeriods(meta.cycleStart, meta.cycleEnd);
+    const expectedReports = (isTeam ? 1 : allTeams.length) * periodsCount;
+    const submittedReports = reports.length;
+    const reportRate = expectedReports ? Math.round(submittedReports / expectedReports * 100) : 0;
+    const checkinRate = members.length ? Math.round(coveredMembers / members.length * 100) : 0;
+
+    const today = new Date();
+    const genDate = today.getFullYear() + '年' + (today.getMonth() + 1) + '月' + today.getDate() + '日';
+    const subtitle = isTeam ? (team ? K.escape(team.name) + ' 阶段快报' : '阶段快报') : '阶段运营快报';
+
+    let h = '';
+    h += '<div class="card card-pad" style="max-width:920px;margin:0 auto">';
+
+    // —— 1. 封面 ——
+    h += '<div style="text-align:center;padding:8px 0 4px">';
+    h += '<div style="color:hsl(var(--accent));opacity:0.7;margin-bottom:4px">' + K.icon('brief', 18) + '</div>';
+    h += '<h1 class="font-display" style="font-size:1.5rem;font-weight:600;line-height:1.2;margin:0 0 4px">' + K.escape(meta.campName || '训练营') + ' · ' + subtitle + '</h1>';
+    h += '<div class="text-muted text-sm" style="margin-top:6px">运营周期 ' + K.escape(K.fmt.date(meta.cycleStart)) + ' – ' + K.escape(K.fmt.date(meta.cycleEnd)) + ' · 生成日期 ' + genDate + ' · 数据来源 ' + K.escape(meta.syncedAt || '—') + '</div>';
+    h += '</div>';
+    h += '<hr class="divider" style="margin:14px 0">';
+
+    // —— 2. 一、训练营整体概览 ——
+    h += '<h2 class="font-display" style="font-size:1.1rem;margin:0 0 12px">一、训练营整体概览</h2>';
+    h += '<div class="stat-grid brief-stats mb-3" style="grid-template-columns:repeat(7,1fr);gap:8px">';
+    h += K.statCard({ label: '队伍', value: teams.length, ico: K.icon('users', 14) });
+    h += K.statCard({ label: '成员', value: members.length, ico: K.icon('users', 14) });
+    h += K.statCard({ label: '目标', value: objectives.length, ico: K.icon('target', 14) });
+    h += K.statCard({ label: 'KR', value: krs.length, ico: K.icon('check', 14) });
+    h += K.statCard({ label: '平均进度', value: avgProgress, unit: '%', ico: K.icon('brief', 14) });
+    h += K.statCard({ label: '打卡', value: checkins.length, ico: K.icon('camera', 14) });
+    h += K.statCard({ label: '提交率', value: reportRate, unit: '%', foot: submittedReports + '/' + expectedReports, ico: K.icon('report', 14) });
+    h += '</div>';
+    // 阶段概要
+    h += '<div style="background:hsl(var(--muted)/0.4);border-radius:var(--r-panel);padding:12px 16px;margin-bottom:16px;border-left:3px solid hsl(var(--primary))">';
+    h += '<div class="text-sm" style="line-height:1.7">';
+    h += '本期共 <strong>' + teams.length + ' 支队伍</strong>、<strong>' + members.length + ' 名成员</strong>参与，设定 <strong>' + objectives.length + ' 个目标</strong>、<strong>' + krs.length + ' 个关键结果</strong>。';
+    h += '整体 OKR 平均进度 <strong>' + avgProgress + '%</strong>，已完成 ' + doneCount + ' 个 KR，有风险 ' + riskCount + ' 个。';
+    h += '双周报提交率 ' + reportRate + '%，打卡活动 ' + checkins.length + ' 场，覆盖 ' + coveredMembers + ' 人次。';
+    h += '</div></div>';
+
+    // —— 3. 二、OKR 进度概览 ——
+    h += '<h2 class="font-display" style="font-size:1.1rem;margin:24px 0 12px">二、OKR 进度概览</h2>';
+    h += '<div style="display:flex;align-items:baseline;gap:14px;margin-bottom:14px">';
+    h += '<div class="font-display tnum" style="font-size:2.2rem;font-weight:600;line-height:1">' + avgProgress + '<span style="font-size:1rem;color:hsl(var(--muted-foreground));font-weight:400;margin-left:2px">%</span></div>';
+    h += '<div class="text-muted text-sm">整体平均进度 · 共 ' + krs.length + ' 个 KR · 有风险 ' + riskCount + ' 个</div>';
+    h += '</div>';
+
+    const ranking = teams.map(function (t) {
+      const tkrs = K.krs(t.id);
+      const prog = K.teamProgress(t.id);
+      const risk = tkrs.filter(k => k.status === '有风险').length;
+      return { team: t, prog: prog, risk: risk, total: tkrs.length };
+    }).sort(function (a, b) { return b.prog - a.prog; });
+
+    h += '<div class="table-wrap mb-3"><table class="table"><thead><tr><th>排名</th><th>队伍</th><th>课题</th><th style="min-width:180px">平均进度</th><th class="text-right">状态</th></tr></thead><tbody>';
+    if (ranking.length === 0) {
+      h += '<tr><td colspan="5" class="text-muted text-sm" style="text-align:center;padding:20px">暂无队伍数据</td></tr>';
+    } else {
+      ranking.forEach(function (r, idx) {
+        const risky = r.risk > 0;
+        const st = risky ? '有风险' : (r.prog === 100 ? '已完成' : r.prog === 0 ? '未开始' : '进行中');
+        const rowStyle = risky ? ' style="background:hsl(var(--c-risk) / 0.06)"' : '';
+        h += '<tr' + rowStyle + '>';
+        h += '<td class="tnum text-muted">' + (idx + 1) + '</td>';
+        h += '<td class="cell-strong">' + K.escape(r.team.name) + '</td>';
+        h += '<td class="cell-muted truncate" style="max-width:220px">' + K.escape(r.team.topic) + '</td>';
+        h += '<td>' + K.progressHtml(r.prog, st) + '</td>';
+        h += '<td class="text-right">' + K.statusChip(st) + '</td>';
+        h += '</tr>';
+      });
+    }
+    h += '</tbody></table></div>';
+
+    h += '<div class="legend">';
+    dist.forEach(function (d) {
+      h += '<span class="lg"><span class="lg-sw" style="background:hsl(' + statusColor[d.st] + ')"></span>' + K.escape(d.st) + ' ' + d.n + '</span>';
+    });
+    h += '</div>';
+
+    // —— 4. 三、双周报亮点摘录 ——
+    h += '<h2 class="font-display" style="font-size:1.1rem;margin:24px 0 12px">三、双周报亮点摘录</h2>';
+    const latestPerTeam = teams.map(function (t) { return K.latestReport(t.id); }).filter(Boolean)
+      .sort(function (a, b) { return String(b.createdAt || '').localeCompare(String(a.createdAt || '')); });
+    if (latestPerTeam.length === 0) {
+      h += '<div class="text-muted text-sm" style="padding:8px 0">暂无双周报记录。</div>';
+    } else {
+      latestPerTeam.forEach(function (r) {
+        const tname = K.teamName(r.teamId);
+        const color = K.colorFor(tname);
+        const summary = String(r.progressSummary || '');
+        const truncated = summary.length > 100 ? summary.slice(0, 100) + '…' : summary;
+        h += '<div style="display:flex;gap:12px;align-items:flex-start;padding:9px 0;border-bottom:1px solid hsl(var(--border))">';
+        h += '<span class="nowrap" style="flex:0 0 92px;font-weight:600;color:hsl(' + color + ')">' + K.escape(tname) + '</span>';
+        h += '<span style="flex:1;line-height:1.55;color:hsl(var(--foreground))">' + K.escape(truncated) + '</span>';
+        h += '<span class="text-muted text-sm nowrap" style="flex:0 0 auto">' + K.escape(r.period || '—') + '</span>';
+        h += '</div>';
+      });
+    }
+
+    // —— 5. 四、研讨打卡统计 ——
+    h += '<h2 class="font-display" style="font-size:1.1rem;margin:24px 0 12px">四、研讨打卡统计</h2>';
+    h += '<div class="stat-grid brief-stats mb-3" style="grid-template-columns:repeat(4,1fr);gap:10px">';
+    h += K.statCard({ label: '打卡活动', value: checkins.length, ico: K.icon('camera', 14) });
+    h += K.statCard({ label: '参与人次', value: participation, ico: K.icon('users', 14) });
+    h += K.statCard({ label: '照片数', value: totalPhotos, ico: K.icon('image', 14) });
+    h += K.statCard({ label: '覆盖成员', value: coveredMembers, ico: K.icon('target', 14) });
+    h += '</div>';
+
+    const idStats = K.identityStats(teamId || undefined);
+    const maxPart = Math.max(1, ...idStats.map(x => x.participation));
+    h += '<div class="text-muted text-sm mb-2">按身份统计参与人次</div>';
+    h += '<div class="bars mb-3">';
+    idStats.forEach(function (x) {
+      const bh = Math.round(x.participation / maxPart * 100);
+      h += '<div class="bar-col"><div class="bar-val">' + x.participation + '</div><div class="bar" style="height:' + Math.max(6, bh) + '%;background:hsl(' + (idColor[x.identity] || 'var(--primary)') + ')"></div><div class="bar-label">' + K.identityBadge(x.identity) + '</div></div>';
+    });
+    h += '</div>';
+
+    const totalPart = idStats.reduce((a, x) => a + x.participation, 0) || 1;
+    h += '<div class="table-wrap mb-3"><table class="table"><thead><tr><th>身份</th><th class="text-right">人数</th><th class="text-right">参与人次</th><th style="min-width:150px">占比</th></tr></thead><tbody>';
+    idStats.forEach(function (x) {
+      const pct = Math.round(x.participation / totalPart * 100);
+      h += '<tr><td>' + K.identityBadge(x.identity) + '</td><td class="text-right tnum">' + x.count + '</td><td class="text-right tnum">' + x.participation + '</td><td>' + K.progressHtml(pct, '进行中') + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+
+    h += '<div class="text-muted text-sm mb-2">照片精选（最近 6 张）</div>';
+    const recentPhotos = checkins.slice().sort(function (a, b) {
+      return String(b.activityTime || '').localeCompare(String(a.activityTime || ''));
+    }).flatMap(function (c) { return (c.photos || []).map(function (p) { return p; }); }).slice(0, 6);
+    if (recentPhotos.length === 0) {
+      h += '<div class="text-muted text-sm" style="padding:8px 0">暂无照片。</div>';
+    } else {
+      h += '<div class="photo-grid">';
+      recentPhotos.forEach(function (p) { h += K.photoThumb(p); });
+      h += '</div>';
+    }
+
+    // —— 6. 五、风险预警 ——
+    h += '<h2 class="font-display" style="font-size:1.1rem;margin:24px 0 12px">五、风险预警</h2>';
+    const riskyKrs = krs.filter(k => k.status === '有风险');
+    if (riskyKrs.length === 0) {
+      h += '<div style="display:flex;align-items:center;gap:8px;padding:10px 0;color:hsl(var(--c-done-fg))">' + K.icon('check', 18) + '<span class="text-sm">当前无有风险的 KR，整体推进平稳。</span></div>';
+    } else {
+      h += '<div class="table-wrap mb-3"><table class="table"><thead><tr><th>队伍</th><th>KR 标题</th><th style="min-width:170px">当前进度</th><th class="text-right">状态</th></tr></thead><tbody>';
+      riskyKrs.forEach(function (k) {
+        h += '<tr style="background:hsl(var(--c-risk) / 0.05)">';
+        h += '<td class="cell-strong">' + K.escape(K.teamName(k.teamId)) + '</td>';
+        h += '<td class="cell-muted">' + K.escape(k.title) + '</td>';
+        h += '<td>' + K.progressHtml(k.progress, k.status) + '</td>';
+        h += '<td class="text-right">' + K.statusChip(k.status) + '</td>';
+        h += '</tr>';
+      });
+      h += '</tbody></table></div>';
+    }
+
+    // —— 7. 六、任务完成情况 ——
+    h += '<h2 class="font-display" style="font-size:1.1rem;margin:24px 0 12px">六、任务完成情况</h2>';
+    h += '<div class="stat-grid brief-stats mb-3" style="grid-template-columns:repeat(3,1fr);gap:10px">';
+    h += K.statCard({ label: 'KR 完成', value: doneCount + ' / ' + krs.length, ico: K.icon('check', 14), foot: '完成率 ' + completionRate + '%' });
+    h += K.statCard({ label: '双周报提交', value: submittedReports + ' / ' + expectedReports, ico: K.icon('report', 14), foot: '提交率 ' + reportRate + '%' });
+    h += K.statCard({ label: '打卡覆盖', value: checkinRate + '%', ico: K.icon('camera', 14), foot: '覆盖 ' + coveredMembers + ' / ' + members.length + ' 人' });
+    h += '</div>';
+
+    const maxN = Math.max(1, ...dist.map(d => d.n));
+    h += '<div class="bars mb-3">';
+    dist.forEach(function (d) {
+      const bh = Math.round(d.n / maxN * 100);
+      h += '<div class="bar-col"><div class="bar-val">' + d.n + '</div><div class="bar" style="height:' + Math.max(6, bh) + '%;background:hsl(' + statusColor[d.st] + ')"></div><div class="bar-label">' + K.escape(d.st) + '</div></div>';
+    });
+    h += '</div>';
+    h += '<div style="display:flex;align-items:baseline;gap:14px">';
+    h += '<div class="font-display tnum" style="font-size:2.2rem;font-weight:600;line-height:1">' + completionRate + '<span style="font-size:1rem;color:hsl(var(--muted-foreground));font-weight:400;margin-left:2px">%</span></div>';
+    h += '<div class="text-muted text-sm">整体完成率 · 已完成 ' + doneCount + ' / ' + krs.length + ' 个 KR</div>';
+    h += '</div>';
+
+    // —— 8. 七、下阶段重点 ——
+    h += '<h2 class="font-display" style="font-size:1.1rem;margin:24px 0 12px">七、下阶段重点</h2>';
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+    // 风险跟进
+    const riskTeams = [...new Set(riskyKrs.map(k => K.teamName(k.teamId)))];
+    h += '<div style="padding:12px 14px;border:1px solid hsl(var(--border));border-left:3px solid hsl(var(--c-risk));border-radius:var(--r-panel)">';
+    h += '<div class="text-sm font-display" style="font-weight:600;margin-bottom:4px">' + K.icon('alert', 14) + ' 风险跟进</div>';
+    h += '<div class="text-muted text-sm">' + (riskCount > 0 ? '需跟进 ' + riskCount + ' 个有风险的 KR，涉及 ' + riskTeams.join('、') : '当前无风险项，保持推进节奏') + '</div>';
+    h += '</div>';
+    // 双周报催收
+    const periodNum = (label) => { const m = /第(\d+)期/.exec(label || ''); return m ? +m[1] : 0; };
+    const maxP = (D.biweeklyReports || []).reduce((a, r) => Math.max(a, periodNum(r.period)), 0);
+    const unsubmittedTeams = isTeam ? [] : allTeams.filter(t => !(D.biweeklyReports || []).some(r => r.teamId === t.id && periodNum(r.period) === maxP)).map(t => t.name);
+    h += '<div style="padding:12px 14px;border:1px solid hsl(var(--border));border-left:3px solid hsl(var(--accent));border-radius:var(--r-panel)">';
+    h += '<div class="text-sm font-display" style="font-weight:600;margin-bottom:4px">' + K.icon('report', 14) + ' 双周报催收</div>';
+    h += '<div class="text-muted text-sm">' + (unsubmittedTeams.length > 0 ? '未提交：' + unsubmittedTeams.join('、') : '本期全部队伍已提交') + '</div>';
+    h += '</div>';
+    // 打卡覆盖
+    h += '<div style="padding:12px 14px;border:1px solid hsl(var(--border));border-left:3px solid hsl(var(--c-doing));border-radius:var(--r-panel)">';
+    h += '<div class="text-sm font-display" style="font-weight:600;margin-bottom:4px">' + K.icon('camera', 14) + ' 打卡覆盖</div>';
+    h += '<div class="text-muted text-sm">覆盖率 ' + checkinRate + '%，' + (checkinRate < 80 ? '需提升参与度' : '参与情况良好') + '</div>';
+    h += '</div>';
+    // 进度推进
+    h += '<div style="padding:12px 14px;border:1px solid hsl(var(--border));border-left:3px solid hsl(var(--primary));border-radius:var(--r-panel)">';
+    h += '<div class="text-sm font-display" style="font-weight:600;margin-bottom:4px">' + K.icon('target', 14) + ' 进度推进</div>';
+    h += '<div class="text-muted text-sm">当前平均 ' + avgProgress + '%，' + (avgProgress < 50 ? '需加速推进' : avgProgress < 80 ? '按计划推进中' : '接近收官') + '</div>';
+    h += '</div>';
+    h += '</div>';
+
+    // —— 页脚 ——
+    h += '<hr class="divider" style="margin:24px 0 12px">';
+    h += '<div class="text-muted text-sm" style="text-align:center">由训练营运营进度看板自动生成 · 可编辑后导出</div>';
+
+    h += '</div>';
+    return h;
+  }
+
+  // —— 初始渲染 ——
+  const params = new URLSearchParams(location.search);
+  const initTeam = params.get('team') || '';
+  view.innerHTML = renderBrief(initTeam);
+  const sel0 = document.getElementById('briefTeamSel');
+  if (sel0) sel0.value = initTeam || '';
+})();
+</script>
+</body>
+</html>

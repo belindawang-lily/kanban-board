@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>双周报 · 投资管理训练营运营进度看板</title>
+<link rel="stylesheet" href="assets/css/kanban.css">
+</head>
+<body>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+(function () {
+  const D = K.data;
+  const teams = K.teams();
+
+  // 解析 ?team= 参数：缺省默认第一队；空串或「全部」进入全部队伍视图
+  const params = new URLSearchParams(location.search);
+  let teamId = params.get('team');
+  if (teamId === null) teamId = teams.length ? teams[0].id : '';
+  if (teamId !== '' && teamId !== '全部' && !K.team(teamId)) {
+    teamId = teams.length ? teams[0].id : '';
+  }
+  const allTeams = (teamId === '' || teamId === '全部');
+
+  // 权限：队员 + 队长 + 管理员可填报（只读不显示）
+  const canFill = true;
+
+  const teamOpts = teams.map(t =>
+    `<option value="${t.id}" ${t.id === teamId ? 'selected' : ''}>${K.escape(t.name)}</option>`
+  ).join('');
+
+  const tools = `<select class="select" style="width:auto;padding:6px 30px 6px 11px;font-size:12.5px" onchange="location.href='biweekly-report.html?team='+this.value">
+      <option value="" ${allTeams ? 'selected' : ''}>全部队伍</option>
+      ${teamOpts}
+    </select>${canFill ? `<button class="btn btn-primary btn-sm" onclick="K.feishuTip('reports','填报双周报')">${K.icon('plus', 15)} 填报新一期</button>` : ''}`;
+
+  const view = K.mount('biweekly', {
+    title: '双周报',
+    crumb: '各队双周进展 · OKR 同步更新',
+    tools: tools
+  });
+
+  const periodParts = (label) => {
+    const m = /第(\d+)期\s*(.*)/.exec(label || '');
+    return m ? { num: m[1], range: m[2] || '' } : { num: '', range: label || '' };
+  };
+
+  let html = '';
+
+  if (allTeams) {
+    // ---------- 全部队伍视图 ----------
+    const allReports = D.biweeklyReports || [];
+    const maxPeriod = allReports.reduce((a, r) => Math.max(a, +(periodParts(r.period).num) || 0), 0);
+    const submittedTeams = new Set(allReports.map(r => r.teamId)).size;
+
+    html += '<div class="stat-grid mb-4">';
+    html += K.statCard({ label: '总提交期数', value: allReports.length, unit: '份', foot: `覆盖 ${submittedTeams}/${teams.length} 支队伍`, ico: K.icon('report', 16), icoColor: '28 70% 52%' });
+    html += K.statCard({ label: '最新一期', value: maxPeriod ? `第${maxPeriod}期` : '—', foot: '跨队伍汇总', ico: K.icon('clock', 16), icoColor: '200 30% 45%' });
+    html += K.statCard({ label: '已填报队伍', value: `${submittedTeams}/${teams.length}`, foot: '训练营目标 6 期/队', ico: K.icon('users', 16), icoColor: '55 24% 49%' });
+    html += '</div>';
+
+    html += '<div class="card card-flush"><div class="card-head"><h2>各队双周报总览</h2><div class="head-spacer"></div><span class="text-muted text-sm">点击「查看」进入队伍双周报详情</span></div><div class="card-body"><div class="table-wrap"><table class="table"><thead><tr><th>队伍</th><th class="text-right">已提交期数</th><th>最新一期</th><th>记录人</th><th class="text-right">查看</th></tr></thead><tbody>';
+    if (!teams.length) {
+      html += '<tr><td colspan="5"><div class="empty">' + K.icon('report', 40) + '<div>暂无队伍数据</div></div></td></tr>';
+    } else {
+      teams.forEach(t => {
+        const rs = K.reports(t.id);
+        const latest = rs.length ? rs[rs.length - 1] : null;
+        const recorders = [...new Set(rs.map(r => r.recorder))];
+        html += '<tr>';
+        html += `<td class="cell-strong">${K.escape(t.name)}</td>`;
+        html += `<td class="text-right tnum">${rs.length}/6</td>`;
+        html += `<td class="cell-muted text-sm">${latest ? K.escape(latest.title || latest.period) : '<span class="text-muted">未提交</span>'}</td>`;
+        html += `<td class="text-sm">${recorders.length ? recorders.map(n => K.escape(n)).join('、') : '—'}</td>`;
+        html += `<td class="text-right"><button class="btn btn-outline btn-sm" onclick="location.href=\'biweekly-report.html?team=${t.id}\'">${K.icon('arrow', 13)} 查看</button></td>`;
+        html += '</tr>';
+      });
+    }
+    html += '</tbody></table></div></div></div>';
+
+    // 填报流程信息卡
+    html += '<div class="card card-pad mt-4">';
+    html += '<div class="card-head" style="padding:0 0 12px;border:none"><h2>填报流程</h2><div class="head-spacer"></div><span class="text-muted text-sm">支持本队多人协作填报</span></div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">';
+    ['自动带出本队当前 OKR 列表', '勾选本期有进展的 KR', '更新进度与状态', '提交后同步回 OKR 模块，避免重复维护'].forEach(s => {
+      html += `<div class="flex items-center gap-2 text-sm"><span style="width:22px;height:22px;border-radius:50%;background:hsl(var(--c-done) / 0.18);color:hsl(var(--c-done));display:grid;place-items:center;flex-shrink:0">${K.icon('check', 13)}</span><span>${K.escape(s)}</span></div>`;
+    });
+    html += '</div></div>';
+
+  } else {
+    // ---------- 单队伍视图 ----------
+    const reports = K.reports(teamId);
+    const latest = reports.length ? reports[reports.length - 1] : null;
+    const recorders = [...new Set(reports.map(r => r.recorder))];
+
+    // 顶部统计卡
+    html += '<div class="stat-grid mb-4">';
+    html += K.statCard({ label: '已提交期数', value: `${reports.length}/6`, unit: '期', foot: '训练营目标 6 期', ico: K.icon('report', 16), icoColor: '28 70% 52%' });
+    if (latest) {
+      const p = periodParts(latest.period);
+      html += K.statCard({ label: '最新一期', value: p.num ? `第${p.num}期` : '—', foot: `${p.range || ''} · 记录人 ${K.escape(latest.recorder)}`, ico: K.icon('clock', 16), icoColor: '200 30% 45%' });
+    } else {
+      html += K.statCard({ label: '最新一期', value: '—', foot: '暂未提交', ico: K.icon('clock', 16) });
+    }
+    html += K.statCard({ label: '记录人数', value: recorders.length, unit: '人', foot: '本队多人协作填报', ico: K.icon('users', 16), icoColor: '55 24% 49%' });
+    html += '</div>';
+
+    // 主体时间线（倒序）
+    if (!reports.length) {
+      html += '<div class="card card-pad mb-4"><div class="empty">' + K.icon('report', 40) + '<div>该队伍暂未提交双周报</div><div class="text-sm" style="margin-top:6px">可点击右上「填报新一期」开始记录</div></div></div>';
+    } else {
+      const list = [...reports].reverse();
+      html += '<div class="card card-pad mb-4"><div class="card-head" style="padding:0 0 14px;border:none"><h2>双周报记录</h2><div class="head-spacer"></div><span class="text-muted text-sm">' + K.escape(K.teamName(teamId)) + ' · 共 ' + reports.length + ' 期</span></div>';
+      html += '<div class="timeline">';
+      list.forEach(r => {
+        html += '<div class="tl-item">';
+        html += '<div class="tl-dot">' + K.icon('report', 14) + '</div>';
+        html += '<div class="tl-body">';
+
+        // 头：period + 记录人 + createdAt
+        html += '<div class="flex items-center justify-between gap-3 mb-3" style="flex-wrap:wrap">';
+        html += '<h3 style="font-size:1.05rem">' + K.escape(r.title || r.period) + '</h3>';
+        html += '<div class="flex items-center gap-2 text-sm text-muted">' + K.avatar(r.recorder, 'sm') + '<span>' + K.escape(r.recorder) + '</span><span>·</span>' + K.icon('clock', 13) + '<span>' + K.fmt.date(r.createdAt) + '</span></div>';
+        html += '</div>';
+
+        // 本期进展
+        html += '<div style="margin-bottom:14px"><div class="text-sm" style="font-weight:600;color:hsl(var(--foreground) / 0.75);margin-bottom:6px">本期进展</div><p style="margin:0;font-size:13px;line-height:1.6">' + K.escape(r.progressSummary || '—') + '</p></div>';
+
+        // 问题与需求
+        html += '<div style="margin-bottom:14px"><div class="flex items-center gap-1 text-sm" style="font-weight:600;color:hsl(var(--c-risk));margin-bottom:6px">' + K.icon('alert', 14) + '<span>问题与需求</span></div><p style="margin:0;font-size:13px;line-height:1.6">' + K.escape(r.problemsNeeds || '—') + '</p></div>';
+
+        // 本期 KR 更新
+        const krs = r.krUpdates || [];
+        html += '<div><div class="flex items-center gap-2 mb-2"><span class="text-sm" style="font-weight:600">本期 KR 更新</span><span class="chip" style="background:hsl(var(--c-done) / 0.16);color:hsl(var(--c-done));font-size:11px">' + K.icon('check', 12) + ' 已同步回 OKR 模块</span></div>';
+        if (krs.length) {
+          html += '<div style="display:flex;flex-direction:column;gap:2px">';
+          krs.forEach(k => {
+            html += '<div class="kr-row"><span class="kr-tag">' + K.escape(k.krId) + '</span><span class="kr-title">' + K.escape(k.title) + '</span>' + K.progressHtml(k.progress, k.status) + K.statusChip(k.status) + '</div>';
+          });
+          html += '</div>';
+        } else {
+          html += '<div class="text-muted text-sm">本期未更新 KR</div>';
+        }
+        html += '</div>'; // end KR section
+
+        html += '</div>'; // end tl-body
+        html += '</div>'; // end tl-item
+      });
+      html += '</div></div>';
+    }
+
+    // 填报流程信息卡
+    html += '<div class="card card-pad">';
+    html += '<div class="card-head" style="padding:0 0 12px;border:none"><h2>填报流程</h2><div class="head-spacer"></div><span class="text-muted text-sm">支持本队多人协作填报</span></div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">';
+    ['自动带出本队当前 OKR 列表', '勾选本期有进展的 KR', '更新进度与状态', '提交后同步回 OKR 模块，避免重复维护'].forEach(s => {
+      html += `<div class="flex items-center gap-2 text-sm"><span style="width:22px;height:22px;border-radius:50%;background:hsl(var(--c-done) / 0.18);color:hsl(var(--c-done));display:grid;place-items:center;flex-shrink:0">${K.icon('check', 13)}</span><span>${K.escape(s)}</span></div>`;
+    });
+    html += '</div></div>';
+  }
+
+  view.innerHTML = html;
+})();
+</script>
+</body>
+</html>
