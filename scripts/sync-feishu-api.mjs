@@ -332,8 +332,11 @@ async function main() {
             headers: { Authorization: `Bearer ${token}` },
           });
           const j = await resp.json();
-          const u = j.data && j.data.tmp_download_urls && j.data.tmp_download_urls[p.token];
-          if (!u) throw new Error(j.msg || '未返回链接');
+          // tmp_download_urls 为数组：[{ file_token, tmp_download_url }]
+          const arr = j.data && j.data.tmp_download_urls;
+          const hit = Array.isArray(arr) ? arr.find(x => x.file_token === p.token) : null;
+          const u = hit && hit.tmp_download_url;
+          if (!u) throw new Error(j.msg || `HTTP ${resp.status}`);
           p.link = u;
           ok++;
         } catch (e) {
