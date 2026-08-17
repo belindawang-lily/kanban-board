@@ -1,11 +1,11 @@
-// 由 sync-feishu-api.mjs 自动同步：2026/8/17 16:44:16
+// 由 sync-feishu-api.mjs 自动同步：2026/8/17 16:54:38
 // 数据来源：飞书开放平台 API（GitHub Actions 自动同步）
 window.KANBAN_DATA = {
   "meta": {
     "campName": "澎π计划AI训练营",
     "cycleStart": "2026-07-15",
     "cycleEnd": "2027-03-31",
-    "syncedAt": "2026/8/17 16:44:16",
+    "syncedAt": "2026/8/17 16:54:38",
     "source": "feishu-api (GitHub Actions)",
     "note": "由 scripts/sync-feishu-api.mjs 从飞书开放平台 API 同步。"
   },
@@ -26,17 +26,17 @@ window.KANBAN_DATA = {
       {
         "identity": "志愿者",
         "count": 1,
-        "participation": 0
+        "participation": 1
       },
       {
         "identity": "内部导师",
         "count": 2,
-        "participation": 0
+        "participation": 1
       },
       {
         "identity": "外部导师",
         "count": 1,
-        "participation": 0
+        "participation": 1
       }
     ]
   },
@@ -2085,7 +2085,11 @@ window.KANBAN_DATA = {
       "activityTime": "2026-07-25 14:00",
       "content": "围绕AI模型特征工程研讨，确定首批入模变量18个，完成特征重要性排序。",
       "photos": [
-        "LruSbI65RopJATxp5aAcEonZn8g"
+        {
+          "token": "LruSbI65RopJATxp5aAcEonZn8g",
+          "name": "广发证券大厦图-2.jpg",
+          "url": ""
+        }
       ],
       "teamParticipantIds": [
         "recvsh4kf0QNeR",
@@ -2162,7 +2166,11 @@ window.KANBAN_DATA = {
       "activityTime": "2026-08-04 15:00",
       "content": "模型评估结果复盘，讨论阈值调整方案，确定优化方向3个。",
       "photos": [
-        "CkfLb6zlgo8odixfUIacogZNnCb"
+        {
+          "token": "CkfLb6zlgo8odixfUIacogZNnCb",
+          "name": "image.png",
+          "url": ""
+        }
       ],
       "teamParticipantIds": [
         "recvsh4mzJrdis",
@@ -2331,7 +2339,11 @@ window.KANBAN_DATA = {
       "activityTime": "2026-08-15 14:00",
       "content": "围绕AI模型特征工程研讨，确定首批入模变量18个，完成特征重要性排序。",
       "photos": [
-        "HgQkb15yeoe151xIVH0cxPzKnPb"
+        {
+          "token": "HgQkb15yeoe151xIVH0cxPzKnPb",
+          "name": "image.png",
+          "url": ""
+        }
       ],
       "teamParticipantIds": [
         "recvsh4vRX3FYW",
