@@ -1,11 +1,11 @@
-// 由 sync-feishu-api.mjs 自动同步：2026/8/17 17:10:44
+// 由 sync-feishu-api.mjs 自动同步：2026/8/17 17:15:42
 // 数据来源：飞书开放平台 API（GitHub Actions 自动同步）
 window.KANBAN_DATA = {
   "meta": {
     "campName": "澎π计划AI训练营",
     "cycleStart": "2026-07-15",
     "cycleEnd": "2027-03-31",
-    "syncedAt": "2026/8/17 17:10:44",
+    "syncedAt": "2026/8/17 17:15:42",
     "source": "feishu-api (GitHub Actions)",
     "note": "由 scripts/sync-feishu-api.mjs 从飞书开放平台 API 同步。"
   },
@@ -2088,7 +2088,7 @@ window.KANBAN_DATA = {
         {
           "token": "LruSbI65RopJATxp5aAcEonZn8g",
           "name": "广发证券大厦图-2.jpg",
-          "link": ""
+          "link": "https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=ZDVlYjEyZDY1ZjBlOWYwYTJmYTdkYjJkZTNiN2EzY2VfMmM5NWI5ZGQwMjhmZGIwZmE3MTU0ZDY0MmFlNzNjNzdfSUQ6NzY3NDg5NzYyOTMwMTgwNDMwNl8xNzg2OTU4MTQwOjE3ODcwNDQ1NDBfVjM"
         }
       ],
       "teamParticipantIds": [
@@ -2169,7 +2169,7 @@ window.KANBAN_DATA = {
         {
           "token": "CkfLb6zlgo8odixfUIacogZNnCb",
           "name": "image.png",
-          "link": ""
+          "link": "https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=Y2FhNmNlMzk0YWFmMGNlYTljNDAwOTAxNDE5M2EwMDlfYWIzZDU3NGU0YmFmODI1YmVhNzM0MTQ5ZmI3ZDYyNjhfSUQ6NzY3NDg5NzgyMjg3NzI0MDYxOF8xNzg2OTU4MTQxOjE3ODcwNDQ1NDFfVjM"
         }
       ],
       "teamParticipantIds": [
@@ -2342,7 +2342,7 @@ window.KANBAN_DATA = {
         {
           "token": "HgQkb15yeoe151xIVH0cxPzKnPb",
           "name": "image.png",
-          "link": ""
+          "link": "https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=YzMwNzI0NjUwMDI2Mzc5ZWZhYmFhYTcxNjJkODEzOGJfY2UyNjM3ZGQwODBiMzAwNWJiNDQxMjhkM2IzMWFlNjhfSUQ6NzY3NDg5OTYwMDA3OTM1ODkzMl8xNzg2OTU4MTQyOjE3ODcwNDQ1NDJfVjM"
         }
       ],
       "teamParticipantIds": [
