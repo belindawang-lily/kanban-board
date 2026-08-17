@@ -28,8 +28,9 @@ body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg)
 .cover .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 .cover .meta div{border-left:2px solid var(--gold);padding:2px 0 2px 12px;font-size:12.5px;color:#aebccd}
 .cover .meta b{display:block;color:#fff;font-size:13px;font-weight:600}
-.cover .meta a{color:#d8e2ee;text-decoration:none;border-bottom:1px dotted var(--gold-l)}
+.cover .meta a{display:block;color:#d8e2ee;text-decoration:none;border-bottom:1px dotted var(--gold-l);word-break:break-all;line-height:1.55;margin-top:2px}
 .cover .meta a:hover{color:#fff}
+.cover .meta i{display:block;font-style:normal;font-size:11.5px;color:#8fa0b5;margin-top:3px}
 
 /* ---------- 目录 ---------- */
 .toc{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:16px 24px;margin:24px 0 34px}
@@ -44,7 +45,7 @@ body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--bg)
 section{margin-bottom:42px}
 h2.sec{font-family:Georgia,"STZhongsong","SimSun",serif;font-size:19px;color:var(--navy);
   padding-bottom:8px;margin-bottom:18px;border-bottom:1px solid var(--rule);display:flex;align-items:baseline;gap:10px}
-h2.sec .no{font-size:14px;color:var(--gold);letter-spacing:.1em}
+h2.sec .no{font-size:20px;color:var(--gold);letter-spacing:.1em}
 h3{font-size:15px;font-weight:700;color:var(--navy);margin:22px 0 8px}
 h3::before{content:"";display:inline-block;width:14px;height:1px;background:var(--gold);vertical-align:middle;margin-right:8px;margin-bottom:3px}
 p{margin-bottom:10px}
@@ -114,7 +115,7 @@ footer{border-top:2px solid var(--navy);margin-top:44px;padding-top:12px;font-si
     <div class="rule"></div>
     <div class="meta">
       <div><b>公网看板</b><a href="https://belindawang-lily.github.io/kanban-board/" target="_blank" rel="noopener">belindawang-lily.github.io/kanban-board</a></div>
-      <div><b>数据填报（飞书多维表格）</b><a href="https://qcnjj22jqvr1.feishu.cn/base/NVokbNXaca3oihspnCicYyccnVe" target="_blank" rel="noopener">qcnjj22jqvr1.feishu.cn/base/NVokbNXa…</a></div>
+      <div><b>数据填报（飞书多维表格）</b><a href="https://qcnjj22jqvr1.feishu.cn/base/NVokbNXaca3oihspnCicYyccnVe" target="_blank" rel="noopener">https://qcnjj22jqvr1.feishu.cn/base/NVokbNXaca3oihspnCicYyccnVe</a><i>注：需管理员分配权限后方可打开，未分配权限将无法访问</i></div>
       <div><b>数据更新</b>每日 18:00（北京时间）自动同步</div>
       <div><b>技术形态</b>零后端 · 纯静态网页 · 无需安装</div>
     </div>
@@ -258,11 +259,11 @@ footer{border-top:2px solid var(--navy);margin-top:44px;padding-top:12px;font-si
 <section id="s4">
   <h2 class="sec"><span class="no">四</span>运行边界与风险提示</h2>
 
-  <div class="warn"><b>1. 公网链接为境外站点，访问需国际网络条件。</b>看板托管于 GitHub Pages（github.io），属境外服务，国内直连通常不稳定，<b>多数情况下需公司出境网络或加速工具方可打开</b>。若领导层无相关条件，可由管理员导出 PDF 快报分发，或评估迁移内网静态服务。</div>
+  <div class="warn"><b>1. 公网链接为GitHub境外站点，访问需国际网络条件。</b>看板托管于 GitHub Pages（github.io），属境外服务，国内直连通常不稳定，多数情况下需VPN加速工具方可打开。</div>
 
   <div class="warn"><b>2. 每日 18:00 自动更新：已实现并稳定运行，存在小幅延迟。</b>系统配置每日北京时间 18:00 一次自动同步。需说明：GitHub 定时任务在整点高峰期可能顺延<b>数分钟至 1 小时</b>，属平台机制，不影响数据正确性。对时效敏感场合（如汇报前），按 2.3 手动触发，约 1–2 分钟生效。</div>
 
-  <div class="warn"><b>3. 看板公开只读，无登录控制。</b>任何获得链接者均可查看看板内容。数据编辑权限在飞书侧受控，但<b>展示层对公网开放</b>，请勿在数据表中填写敏感信息（手机号、身份证号等）；确需收录的敏感字段建议单独存放于飞书，不纳入看板数据表。</div>
+  <div class="warn"><b>3. 看板公开只读，无登录控制。</b>任何获得链接者均可查看看板内容。数据编辑权限在飞书侧受控，但展示层对公网开放，请勿在数据表中填写敏感信息（手机号、身份证号等）。</div>
 
   <div class="note"><b>4. 其他运行边界。</b>① 打卡照片不下载入库（避免大文件撑大代码仓库），看板内点击照片查看/下载原图，链接有效期 24 小时、随每日同步自动刷新，原图始终可在<a href="https://qcnjj22jqvr1.feishu.cn/base/NVokbNXaca3oihspnCicYyccnVe" target="_blank" rel="noopener">飞书多维表格</a>查看；② 看板为每日定时快照非实时，填报后次日 18:00 前上板；③ GitHub 规定仓库连续 60 天无活动将暂停定时任务，本项目每日有自动提交、正常不触发，长期停用后需管理员手动重启。</div>
 </section>
