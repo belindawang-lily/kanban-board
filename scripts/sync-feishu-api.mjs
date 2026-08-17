@@ -284,8 +284,9 @@ async function main() {
     const extraRaw = getField(r, '其他参与人');
     const extraParticipants = Array.isArray(extraRaw) ? extraRaw.map(x => typeof x === 'string' ? x : (x.text || x.name || '')).filter(Boolean) : (txt(extraRaw) ? txt(extraRaw).split(/[,，]/).map(s => s.trim()).filter(Boolean) : []);
     const photosRaw = getField(r, '打卡照片');
+    // rawUrl 为记录接口返回的临时下载链接，含高级权限 Base 必需的 extra 鉴权参数
     const photos = Array.isArray(photosRaw)
-      ? photosRaw.map(a => ({ token: a.file_token || '', name: a.name || 'photo' })).filter(p => p.token)
+      ? photosRaw.map(a => ({ token: a.file_token || '', name: a.name || 'photo', rawUrl: a.url || '' })).filter(p => p.token)
       : [];
     return {
       id, teamId,
@@ -328,7 +329,17 @@ async function main() {
         used.add(file);
         if (fs.existsSync(dest)) { p.url = `assets/photos/${file}`; ok++; continue; }
         try {
-          const resp = await fetch(`${API}/drive/v1/medias/${p.token}/download`, {
+          // 高级权限 Base 必须携带附件对象 url 中的 extra 参数，否则返回 HTTP 400
+          let dl = `${API}/drive/v1/medias/${p.token}/download`;
+          if (p.rawUrl) {
+            const m = /extra=([^&]*)/.exec(p.rawUrl);
+            if (m) {
+              let extra = m[1];
+              try { extra = decodeURIComponent(extra); } catch {}
+              dl += `?extra=${encodeURIComponent(extra)}`;
+            }
+          }
+          const resp = await fetch(dl, {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
@@ -357,6 +368,8 @@ async function main() {
     log('④ 下载打卡照片…');
     await downloadPhotos();
   }
+  // rawUrl 仅用于下载，不写入 data.js
+  checkins.forEach(c => c.photos.forEach(p => { delete p.rawUrl; }));
 
   const data = {
     meta: {
