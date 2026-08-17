@@ -314,61 +314,42 @@ async function main() {
   });
   const avgProgress = keyResults.length ? Math.round(keyResults.reduce((a, k) => a + k.progress, 0) / keyResults.length) : 0;
 
-  // ---------- 下载打卡照片到 assets/photos（失败则回退显示文件名） ----------
-  async function downloadPhotos() {
-    const PHOTO_DIR = path.join(ROOT, 'assets', 'photos');
-    fs.mkdirSync(PHOTO_DIR, { recursive: true });
-    const MAX_BYTES = 5 * 1024 * 1024;
-    const ext = (name) => { const m = /\.(jpe?g|png|gif|webp|bmp)$/i.exec(name || ''); return m ? m[0].toLowerCase() : '.jpg'; };
-    const used = new Set();
+  // ---------- 获取打卡照片临时下载链接（不落库，避免照片撑大仓库） ----------
+  async function fetchPhotoLinks() {
     let ok = 0, fail = 0, warned = false;
     for (const c of checkins) {
       for (const p of c.photos) {
-        const file = p.token + ext(p.name);
-        const dest = path.join(PHOTO_DIR, file);
-        used.add(file);
-        if (fs.existsSync(dest)) { p.url = `assets/photos/${file}`; ok++; continue; }
         try {
-          // 高级权限 Base 必须携带附件对象 url 中的 extra 参数，否则返回 HTTP 400
-          let dl = `${API}/drive/v1/medias/${p.token}/download`;
-          if (p.rawUrl) {
-            const m = /extra=([^&]*)/.exec(p.rawUrl);
-            if (m) {
-              let extra = m[1];
-              try { extra = decodeURIComponent(extra); } catch {}
-              dl += `?extra=${encodeURIComponent(extra)}`;
-            }
+          // 高级权限 Base 必须携带 extra 参数，取自记录接口返回的附件 url
+          let qs = '';
+          const m = p.rawUrl && /extra=([^&]*)/.exec(p.rawUrl);
+          if (m) {
+            let extra = m[1];
+            try { extra = decodeURIComponent(extra); } catch {}
+            qs = `&extra=${encodeURIComponent(extra)}`;
           }
-          const resp = await fetch(dl, {
+          const resp = await fetch(`${API}/drive/v1/medias/batch_get_tmp_download_url?file_tokens=${encodeURIComponent(p.token)}${qs}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-          const buf = Buffer.from(await resp.arrayBuffer());
-          if (buf.length > MAX_BYTES) throw new Error(`单张超过5MB`);
-          fs.writeFileSync(dest, buf);
-          p.url = `assets/photos/${file}`;
+          const j = await resp.json();
+          const u = j.data && j.data.tmp_download_urls && j.data.tmp_download_urls[p.token];
+          if (!u) throw new Error(j.msg || '未返回链接');
+          p.link = u;
           ok++;
         } catch (e) {
-          p.url = '';
+          p.link = '';
           fail++;
-          if (!warned) { log(`   ⚠ 照片下载失败（示例 ${p.name}）：${e.message}`); warned = true; }
+          if (!warned) { log(`   ⚠ 照片链接获取失败（示例 ${p.name}）：${e.message}`); warned = true; }
         }
       }
     }
-    // 清理已不在飞书中的孤儿照片
-    for (const f of fs.readdirSync(PHOTO_DIR)) {
-      if (!used.has(f)) { try { fs.unlinkSync(path.join(PHOTO_DIR, f)); } catch {} }
-    }
-    if (ok + fail > 0) {
-      log(`   照片：成功 ${ok} · 失败 ${fail}（失败项看板显示文件名）`);
-      if (ok === 0) log('   ⚠ 全部照片下载失败：请检查自建应用是否开通「云空间」下载权限（drive:drive:readonly）');
-    }
+    if (ok + fail > 0) log(`   照片链接：成功 ${ok} · 失败 ${fail}（链接 24 小时有效，随每日同步刷新）`);
   }
   if (!dryRun) {
-    log('④ 下载打卡照片…');
-    await downloadPhotos();
+    log('④ 获取打卡照片链接…');
+    await fetchPhotoLinks();
   }
-  // rawUrl 仅用于下载，不写入 data.js
+  // rawUrl 仅用于鉴权，不写入 data.js
   checkins.forEach(c => c.photos.forEach(p => { delete p.rawUrl; }));
 
   const data = {

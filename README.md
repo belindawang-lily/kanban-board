@@ -13,7 +13,7 @@
 ```
 
 - 零后端：数据存飞书，看板为纯静态 HTML，无需服务器
-- 自动同步：每天北京时间 08:00 / 20:00 各一次；推送代码到 main 也会触发
+- 自动同步：每天北京时间 18:00 一次；推送代码到 main 也会触发
 - 编辑闭环：看板内所有「新建/填报」按钮跳转飞书 Base 对应表，数据在飞书侧持久化
 
 ## 页面说明
@@ -36,7 +36,6 @@ kanban-board/
 ├─ USER_MANUAL.html           # 使用手册（交付文档）
 ├─ assets/
 │  ├─ css/kanban.css
-│  ├─ photos/                # 打卡照片（同步脚本自动下载）
 │  └─ js/
 │     ├─ data.js              # 数据快照（同步脚本自动覆盖）
 │     └─ app.js               # 数据层 + 共享组件 + 飞书跳转 + CSV 导出
@@ -50,7 +49,7 @@ kanban-board/
 
 ### 自动（GitHub Actions）
 
-- 触发：cron `0 0,12 * * *`（北京时间 08:00 / 20:00）+ push 到 main + 手动
+- 触发：cron `0 10 * * *`（北京时间 18:00）+ push 到 main + 手动
 - 依赖仓库 Secrets：`FEISHU_APP_ID`、`FEISHU_APP_SECRET`（飞书自建应用凭证）
 - 流程：拉取飞书 6 张表 → 生成 `data.js` → 提交推送 → 部署 Pages
 
@@ -84,9 +83,9 @@ node scripts/sync-via-lark-cli.mjs
 
 ## 已知限制
 
-1. 数据延迟：最长滞后 12 小时；GitHub Actions 整点高峰可能顺延数分钟至 1 小时；紧急可在 Actions 页面手动触发
+1. 数据延迟：最长滞后 24 小时；GitHub Actions 整点高峰可能顺延数分钟至 1 小时；紧急可在 Actions 页面手动触发
 2. 外网访问：`github.io` 为境外站点，国内直连不稳定
-3. 打卡照片：同步时自动下载至 `assets/photos/` 上板显示；单张超 5MB 或权限受限时回退显示文件名（原图在 [飞书 Base](https://qcnjj22jqvr1.feishu.cn/base/NVokbNXaca3oihspnCicYyccnVe) 查看，需开通云空间下载权限 `drive:drive:readonly`）
+3. 打卡照片：不下载落库（避免撑大仓库），看板显示飞书临时下载链接（24 小时有效，随每日同步刷新），点击查看/下载原图
 4. 定时任务：仓库连续 60 天无活动时 GitHub 会自动暂停 cron（本项目每日自动提交，正常不会触发）
 
 ## 技术栈

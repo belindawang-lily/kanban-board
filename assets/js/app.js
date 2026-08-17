@@ -135,10 +135,11 @@
     return html;
   };
   K.photoThumb = (p) => {
-    if (p && typeof p === 'object' && p.url) {
-      return `<a class="photo-link" href="${K.escape(p.url)}" target="_blank" rel="noopener" title="查看原图：${K.escape(p.name || '')}"><img class="photo-img" loading="lazy" src="${K.escape(p.url)}" alt="${K.escape(p.name || '打卡照片')}"></a>`;
+    const name = (p && typeof p === 'object') ? (p.name || '照片') : p;
+    if (p && typeof p === 'object' && (p.link || p.url)) {
+      const src = p.link || p.url;
+      return `<a class="photo-link" href="${K.escape(src)}" target="_blank" rel="noopener" title="查看/下载原图：${K.escape(name)}"><img class="photo-img" loading="lazy" src="${K.escape(src)}" alt="${K.escape(name)}" onerror="this.style.display='none';this.parentElement.classList.add('no-img')"><span class="ph-fallback">${K.icon('image', 22)}<i>${K.escape(name)}</i></span></a>`;
     }
-    const name = (p && typeof p === 'object') ? (p.name || p.token || '照片') : p;
     return `<div class="photo-thumb">${K.icon('image', 22)}<div class="ph-name">${K.escape(name)}</div></div>`;
   };
   K.statCard = ({ label, value, unit, foot, ico, variant }) => `

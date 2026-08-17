@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>日常打卡 · 澎π计划AI训练营运营进度看板</title>
-<link rel="stylesheet" href="assets/css/kanban.css?v=10">
+<link rel="stylesheet" href="assets/css/kanban.css?v=11">
 </head>
 <body>
 <script src="assets/js/data.js"></script>
@@ -61,22 +61,30 @@
     html += K.statCard({ label: '覆盖成员数', value: gPid.size, foot: `共 ${teams.length} 支队伍`, ico: K.icon('check', 16), icoColor: '92 30% 40%' });
     html += '</div>';
 
-    html += '<div class="card card-flush"><div class="card-head"><h2>各队伍打卡概览</h2><div class="head-spacer"></div><span class="text-muted text-sm">点击行查看队伍打卡时间线</span></div><div class="card-body"><div class="table-wrap"><table class="table"><thead><tr><th>队伍</th><th>队长</th><th class="text-right">活动数</th><th class="text-right">参与人次</th><th class="text-right">照片数</th><th>查看</th></tr></thead><tbody>';
+    html += '<div class="card card-flush"><div class="card-head"><h2>各队伍打卡概览</h2><div class="head-spacer"></div><span class="text-muted text-sm">点击行查看队伍打卡时间线 · 应参与人次 = 正式成员数 × 活动数</span></div><div class="card-body"><div class="table-wrap"><table class="table"><thead><tr><th>队伍</th><th>队长</th><th class="text-right">活动数</th><th class="text-right">参与人次/应参与人次</th><th class="text-right">照片数</th><th>查看</th></tr></thead><tbody>';
     if (!teams.length) {
       html += '<tr><td colspan="6"><div class="empty">' + K.icon('camera', 40) + '<div>暂无队伍数据</div></div></td></tr>';
     } else {
       teams.forEach(t => {
         const cs = K.checkins(t.id);
-        let pt = 0, ph = 0;
+        // 参与率口径：仅正式成员（不含志愿者、导师）
+        const formal = (K.members(t.id) || []).filter(m => m.identity === '成员');
+        const formalIds = new Set(formal.map(m => m.id));
+        const formalNames = new Set(formal.map(m => m.name));
+        let pt = 0, ph = 0, fp = 0;
         cs.forEach(c => {
           pt += partCount(c);
           ph += (c.photos || []).length;
+          fp += (c.teamParticipantIds || []).filter(id => formalIds.has(id)).length;
+          fp += (c.volunteerParticipantIds || []).filter(id => formalIds.has(id)).length;
+          fp += (c.extraParticipants || []).filter(n => formalNames.has(n)).length;
         });
+        const fe = formal.length * cs.length;
         html += `<tr class="row-link" onclick="location.href='checkin.html?team=${K.escape(t.id)}'" style="cursor:pointer">`;
         html += `<td class="cell-strong">${K.escape(t.name)}</td>`;
         html += `<td><div class="flex items-center gap-2">${K.avatar(t.leader, 'sm')}<span class="text-sm">${K.escape(t.leader)}</span></div></td>`;
         html += `<td class="text-right tnum">${cs.length}</td>`;
-        html += `<td class="text-right tnum">${pt}</td>`;
+        html += `<td class="text-right tnum"><b style="color:var(--primary)">${fp}</b>/${fe}</td>`;
         html += `<td class="text-right tnum">${ph}</td>`;
         html += `<td><span class="text-sm" style="color:var(--primary);font-weight:600;display:inline-flex;align-items:center;gap:4px">查看 ${K.icon('arrow', 12)}</span></td>`;
         html += '</tr>';
@@ -137,19 +145,20 @@
           (c.photos || []).forEach(p => { html += K.photoThumb(p); });
           html += '</div>';
         }
-        // 参与人：团队内 + 志愿者 + 其他
-        html += '<div class="flex items-center gap-3" style="flex-wrap:wrap">';
-        if (teamParts.length) {
-          html += K.avatarStack(teamParts);
-          html += '<span class="text-muted text-sm">团队成员 ' + teamParts.length + ' 人</span>';
-        }
-        if (volParts.length) {
-          html += '<span style="width:1px;height:20px;background:var(--border)"></span>';
-          html += K.avatarStack(volParts);
-          html += '<span class="text-muted text-sm">志愿者 ' + volParts.length + ' 人</span>';
+        // 参与人：完整姓名展示（团队成员 + 志愿者 + 其他）
+        html += '<div style="margin-bottom:10px;line-height:2.1">';
+        const linkedNames = [...teamParts, ...volParts].map(id => {
+          const m = K.member(id);
+          return m ? m.name : '';
+        }).filter(Boolean);
+        if (linkedNames.length) {
+          html += '<span class="text-muted text-sm" style="margin-right:4px">' + K.icon('users', 12) + ' 参与 ' + totalPeople + ' 人：</span>';
+          linkedNames.forEach(n => {
+            html += '<span class="chip" style="font-size:12px;padding:2px 10px;margin:0 6px 4px 0">' + K.escape(n) + '</span>';
+          });
         }
         if ((c.extraParticipants || []).length) {
-          html += '<span class="text-muted text-sm">+ 其他：' + (c.extraParticipants || []).map(K.escape).join('、') + '</span>';
+          html += '<span class="chip" style="font-size:12px;padding:2px 10px;margin:0 6px 4px 0;opacity:0.75">其他：' + (c.extraParticipants || []).map(K.escape).join('、') + '</span>';
         }
         html += '</div>';
         // 未参与人员
