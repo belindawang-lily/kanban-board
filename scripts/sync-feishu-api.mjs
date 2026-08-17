@@ -284,7 +284,9 @@ async function main() {
     const extraRaw = getField(r, '其他参与人');
     const extraParticipants = Array.isArray(extraRaw) ? extraRaw.map(x => typeof x === 'string' ? x : (x.text || x.name || '')).filter(Boolean) : (txt(extraRaw) ? txt(extraRaw).split(/[,，]/).map(s => s.trim()).filter(Boolean) : []);
     const photosRaw = getField(r, '打卡照片');
-    const photos = Array.isArray(photosRaw) ? photosRaw.map(a => a.file_token || a.name || 'photo').filter(Boolean) : [];
+    const photos = Array.isArray(photosRaw)
+      ? photosRaw.map(a => ({ token: a.file_token || '', name: a.name || 'photo' })).filter(p => p.token)
+      : [];
     return {
       id, teamId,
       activityTime: dt(getField(r, '活动时间')),
@@ -299,12 +301,62 @@ async function main() {
   const identityTypes = ['成员', '志愿者', '内部导师', '外部导师'];
   const identityStats = identityTypes.map(t => {
     const ms = members.filter(m => m.identity === t);
-    const participation = checkins.reduce((a, c) => a + (c.teamParticipantIds || []).filter(id => {
-      const m = members.find(x => x.id === id); return m && m.identity === t;
-    }).length, 0);
+    const ids = new Set(ms.map(m => m.id));
+    const names = new Set(ms.map(m => m.name));
+    let participation = 0;
+    checkins.forEach(c => {
+      participation += (c.teamParticipantIds || []).filter(id => ids.has(id)).length;
+      // 其他参与人为文本姓名，按成员名册归入对应身份统计
+      participation += (c.extraParticipants || []).filter(n => names.has(n)).length;
+    });
     return { identity: t, count: ms.length, participation };
   });
   const avgProgress = keyResults.length ? Math.round(keyResults.reduce((a, k) => a + k.progress, 0) / keyResults.length) : 0;
+
+  // ---------- 下载打卡照片到 assets/photos（失败则回退显示文件名） ----------
+  async function downloadPhotos() {
+    const PHOTO_DIR = path.join(ROOT, 'assets', 'photos');
+    fs.mkdirSync(PHOTO_DIR, { recursive: true });
+    const MAX_BYTES = 5 * 1024 * 1024;
+    const ext = (name) => { const m = /\.(jpe?g|png|gif|webp|bmp)$/i.exec(name || ''); return m ? m[0].toLowerCase() : '.jpg'; };
+    const used = new Set();
+    let ok = 0, fail = 0, warned = false;
+    for (const c of checkins) {
+      for (const p of c.photos) {
+        const file = p.token + ext(p.name);
+        const dest = path.join(PHOTO_DIR, file);
+        used.add(file);
+        if (fs.existsSync(dest)) { p.url = `assets/photos/${file}`; ok++; continue; }
+        try {
+          const resp = await fetch(`${API}/drive/v1/medias/${p.token}/download`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const buf = Buffer.from(await resp.arrayBuffer());
+          if (buf.length > MAX_BYTES) throw new Error(`单张超过5MB`);
+          fs.writeFileSync(dest, buf);
+          p.url = `assets/photos/${file}`;
+          ok++;
+        } catch (e) {
+          p.url = '';
+          fail++;
+          if (!warned) { log(`   ⚠ 照片下载失败（示例 ${p.name}）：${e.message}`); warned = true; }
+        }
+      }
+    }
+    // 清理已不在飞书中的孤儿照片
+    for (const f of fs.readdirSync(PHOTO_DIR)) {
+      if (!used.has(f)) { try { fs.unlinkSync(path.join(PHOTO_DIR, f)); } catch {} }
+    }
+    if (ok + fail > 0) {
+      log(`   照片：成功 ${ok} · 失败 ${fail}（失败项看板显示文件名）`);
+      if (ok === 0) log('   ⚠ 全部照片下载失败：请检查自建应用是否开通「云空间」下载权限（drive:drive:readonly）');
+    }
+  }
+  if (!dryRun) {
+    log('④ 下载打卡照片…');
+    await downloadPhotos();
+  }
 
   const data = {
     meta: {
@@ -331,13 +383,13 @@ async function main() {
   log(`   汇总：队伍 ${data.summary.teamCount} · 成员 ${data.summary.totalMembers} · 目标 ${data.summary.totalObjectives} · KR ${data.summary.totalKRs} · 双周报 ${data.summary.reportsSubmitted} · 打卡 ${data.summary.checkinCount} · 平均进度 ${data.summary.avgProgress}%`);
 
   if (dryRun) {
-    log('④ --dry-run：未写入文件。');
+    log('⑤ --dry-run：未写入文件。');
     return;
   }
 
   const content = `// 由 sync-feishu-api.mjs 自动同步：${data.meta.syncedAt}\n// 数据来源：飞书开放平台 API（GitHub Actions 自动同步）\nwindow.KANBAN_DATA = ${JSON.stringify(data, null, 2)};\n`;
   fs.writeFileSync(OUT, content, 'utf8');
-  log(`④ 已写入 ${path.relative(ROOT, OUT)}`);
+  log(`⑤ 已写入 ${path.relative(ROOT, OUT)}`);
   log('完成。');
 }
 

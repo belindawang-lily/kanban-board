@@ -60,14 +60,14 @@
       : 0;
     return idTypes.map(t => {
       const ms = members.filter(m => m.identity === t);
+      const ids = new Set(ms.map(m => m.id));
+      const names = new Set(ms.map(m => m.name));
       let participation = 0;
       checkins.forEach(c => {
-        participation += (c.teamParticipantIds || []).filter(id => {
-          const m = K.member(id); return m && m.identity === t;
-        }).length;
-        participation += (c.volunteerParticipantIds || []).filter(id => {
-          const m = K.member(id); return m && m.identity === t;
-        }).length;
+        participation += (c.teamParticipantIds || []).filter(id => ids.has(id)).length;
+        participation += (c.volunteerParticipantIds || []).filter(id => ids.has(id)).length;
+        // 其他参与人为文本姓名，按成员名册归入对应身份统计
+        participation += (c.extraParticipants || []).filter(n => names.has(n)).length;
       });
       const expected = ms.length * avgRounds;
       return { identity: t, count: ms.length, participation, expected };
@@ -134,7 +134,13 @@
     html += '</div>';
     return html;
   };
-  K.photoThumb = (filename) => `<div class="photo-thumb">${K.icon('image', 22)}<div class="ph-name">${K.escape(filename)}</div></div>`;
+  K.photoThumb = (p) => {
+    if (p && typeof p === 'object' && p.url) {
+      return `<a class="photo-link" href="${K.escape(p.url)}" target="_blank" rel="noopener" title="查看原图：${K.escape(p.name || '')}"><img class="photo-img" loading="lazy" src="${K.escape(p.url)}" alt="${K.escape(p.name || '打卡照片')}"></a>`;
+    }
+    const name = (p && typeof p === 'object') ? (p.name || p.token || '照片') : p;
+    return `<div class="photo-thumb">${K.icon('image', 22)}<div class="ph-name">${K.escape(name)}</div></div>`;
+  };
   K.statCard = ({ label, value, unit, foot, ico, variant }) => `
     <div class="stat ${variant ? 'is-' + variant : ''}">
       <div class="stat-label">${ico ? `<span class="stat-ico">${ico}</span>` : ''}${K.escape(label)}</div>

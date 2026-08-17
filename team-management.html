@@ -115,9 +115,13 @@
   if (!selId || !K.team(selId)) selId = teams.length ? teams[0].id : null;
   const team = selId ? K.team(selId) : null;
 
-  // ---- 累计参与次数：该成员在所属队伍 checkins.teamParticipantIds 中的出现次数 ----
+  // ---- 累计参与次数：关联列按成员ID，其他参与人文本列按姓名匹配 ----
   const partCountOf = (memberId, teamId) => {
-    return K.checkins(teamId).filter(c => (c.teamParticipantIds || []).indexOf(memberId) !== -1).length;
+    const m = K.member(memberId);
+    return K.checkins(teamId).filter(c =>
+      (c.teamParticipantIds || []).indexOf(memberId) !== -1
+      || (m && (c.extraParticipants || []).indexOf(m.name) !== -1)
+    ).length;
   };
 
   // 队伍状态徽标（"运转中"视为进行中色调，复用 K.statusChip）

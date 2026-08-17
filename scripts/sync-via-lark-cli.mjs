@@ -259,7 +259,7 @@ function main() {
     const extraRaw = f[F.checkins.extraParticipants];
     const extraParticipants = Array.isArray(extraRaw) ? extraRaw.map(x => typeof x === 'string' ? x : (x.text || x.name || '')).filter(Boolean) : (txt(extraRaw) ? txt(extraRaw).split(/[,，]/).map(s => s.trim()).filter(Boolean) : []);
     const photosRaw = f[F.checkins.photos];
-    const photos = Array.isArray(photosRaw) ? photosRaw.map(a => a.name || a.file_token || 'photo').filter(Boolean) : [];
+    const photos = Array.isArray(photosRaw) ? photosRaw.map(a => ({ token: a.file_token || '', name: a.name || 'photo' })).filter(p => p.token) : [];
     return {
       id, teamId,
       activityTime: dt(f[F.checkins.activityTime]),
@@ -275,11 +275,15 @@ function main() {
   const identityTypes = ['成员', '志愿者', '内部导师', '外部导师'];
   const identityStats = identityTypes.map(t => {
     const ms = members.filter(m => m.identity === t);
-    const participation = checkins.reduce((a, c) => a + (c.teamParticipantIds || []).filter(id => {
-      const m = members.find(x => x.id === id); return m && m.identity === t;
-    }).length + (c.volunteerParticipantIds || []).filter(id => {
-      const m = members.find(x => x.id === id); return m && m.identity === t;
-    }).length, 0);
+    const ids = new Set(ms.map(m => m.id));
+    const names = new Set(ms.map(m => m.name));
+    let participation = 0;
+    checkins.forEach(c => {
+      participation += (c.teamParticipantIds || []).filter(id => ids.has(id)).length;
+      participation += (c.volunteerParticipantIds || []).filter(id => ids.has(id)).length;
+      // 其他参与人为文本姓名，按成员名册归入对应身份统计
+      participation += (c.extraParticipants || []).filter(n => names.has(n)).length;
+    });
     return { identity: t, count: ms.length, participation };
   });
   const avgProgress = keyResults.length ? Math.round(keyResults.reduce((a, k) => a + k.progress, 0) / keyResults.length) : 0;

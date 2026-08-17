@@ -36,6 +36,7 @@ kanban-board/
 ├─ USER_MANUAL.html           # 使用手册（交付文档）
 ├─ assets/
 │  ├─ css/kanban.css
+│  ├─ photos/                # 打卡照片（同步脚本自动下载）
 │  └─ js/
 │     ├─ data.js              # 数据快照（同步脚本自动覆盖）
 │     └─ app.js               # 数据层 + 共享组件 + 飞书跳转 + CSV 导出
@@ -85,7 +86,7 @@ node scripts/sync-via-lark-cli.mjs
 
 1. 数据延迟：最长滞后 12 小时；GitHub Actions 整点高峰可能顺延数分钟至 1 小时；紧急可在 Actions 页面手动触发
 2. 外网访问：`github.io` 为境外站点，国内直连不稳定
-3. 打卡照片：看板仅显示文件名占位，原图在飞书 Base 中查看
+3. 打卡照片：同步时自动下载至 `assets/photos/` 上板显示；单张超 5MB 或权限受限时回退显示文件名（原图在 [飞书 Base](https://qcnjj22jqvr1.feishu.cn/base/NVokbNXaca3oihspnCicYyccnVe) 查看，需开通云空间下载权限 `drive:drive:readonly`）
 4. 定时任务：仓库连续 60 天无活动时 GitHub 会自动暂停 cron（本项目每日自动提交，正常不会触发）
 
 ## 技术栈
