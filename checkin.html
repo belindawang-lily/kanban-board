@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>日常打卡 · 投资管理训练营运营进度看板</title>
-<link rel="stylesheet" href="assets/css/kanban.css?v=2">
+<title>日常打卡 · 澎π计划AI训练营运营进度看板</title>
+<link rel="stylesheet" href="assets/css/kanban.css?v=10">
 </head>
 <body>
 <script src="assets/js/data.js"></script>
@@ -78,7 +78,7 @@
         html += `<td class="text-right tnum">${cs.length}</td>`;
         html += `<td class="text-right tnum">${pt}</td>`;
         html += `<td class="text-right tnum">${ph}</td>`;
-        html += `<td><span class="text-sm" style="color:hsl(var(--primary));font-weight:600;display:inline-flex;align-items:center;gap:4px">查看 ${K.icon('arrow', 12)}</span></td>`;
+        html += `<td><span class="text-sm" style="color:var(--primary);font-weight:600;display:inline-flex;align-items:center;gap:4px">查看 ${K.icon('arrow', 12)}</span></td>`;
         html += '</tr>';
       });
     }
@@ -120,8 +120,11 @@
         const teamParts = c.teamParticipantIds || [];
         const volParts = c.volunteerParticipantIds || [];
         const totalPeople = teamParts.length + volParts.length + (c.extraParticipants || []).length;
+        // 全队成员 - 参与者 = 未参与者
+        const allTeamMembers = (K.members(teamId) || []).filter(m => m.identity === '成员' || m.identity === '志愿者');
+        const absentIds = allTeamMembers.filter(m => !teamParts.includes(m.id) && !volParts.includes(m.id)).map(m => m.id);
         html += '<div class="tl-item">';
-        html += '<div class="tl-dot" style="color:hsl(var(--accent))">' + K.icon('camera', 14) + '</div>';
+        html += '<div class="tl-dot" style="color:var(--accent)">' + K.icon('camera', 14) + '</div>';
         html += '<div class="tl-body">';
         // 头：时间
         html += '<div class="flex items-center gap-2" style="margin-bottom:6px"><span style="font-weight:600">' + K.escape(K.fmt.datetime(c.activityTime)) + '</span>';
@@ -141,7 +144,7 @@
           html += '<span class="text-muted text-sm">团队成员 ' + teamParts.length + ' 人</span>';
         }
         if (volParts.length) {
-          html += '<span style="width:1px;height:20px;background:hsl(var(--border))"></span>';
+          html += '<span style="width:1px;height:20px;background:var(--border)"></span>';
           html += K.avatarStack(volParts);
           html += '<span class="text-muted text-sm">志愿者 ' + volParts.length + ' 人</span>';
         }
@@ -149,6 +152,16 @@
           html += '<span class="text-muted text-sm">+ 其他：' + (c.extraParticipants || []).map(K.escape).join('、') + '</span>';
         }
         html += '</div>';
+        // 未参与人员
+        if (absentIds.length) {
+          html += '<div class="flex items-center gap-2" style="flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)">';
+          html += '<span class="text-muted text-sm" style="white-space:nowrap">' + K.icon('users', 12) + ' 未参与 ' + absentIds.length + ' 人：</span>';
+          absentIds.forEach(id => {
+            const m = K.member(id);
+            html += '<span class="chip" style="opacity:0.5;font-size:11px;padding:2px 8px">' + K.escape(m ? m.name : id) + '</span>';
+          });
+          html += '</div>';
+        }
         html += '</div></div>';
       });
       html += '</div>';
@@ -157,23 +170,24 @@
 
     // 身份参与统计
     const idStats = K.identityStats(teamId);
-    const totalPart = idStats.reduce((a, x) => a + x.participation, 0) || 1;
-    const maxPart = Math.max(1, ...idStats.map(x => x.participation));
-    html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>身份参与统计</h2><div class="head-spacer"></div><span class="text-muted text-sm">按打卡参与人次</span></div>';
-    html += '<div class="table-wrap"><table class="table"><thead><tr><th>身份</th><th class="text-right">人数</th><th class="text-right">参与人次</th><th style="min-width:110px">占比</th></tr></thead><tbody>';
+    const maxPart = Math.max(1, ...idStats.map(x => x.expected ? x.participation / x.expected : 0));
+    html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>身份参与统计</h2><div class="head-spacer"></div><span class="text-muted text-sm">按打卡参与率</span></div>';
+    html += '<div class="table-wrap"><table class="table"><thead><tr><th>身份</th><th class="text-right">人数</th><th class="text-right">参与人次</th><th style="min-width:110px">参与率</th></tr></thead><tbody>';
     idStats.forEach(x => {
-      const pct = Math.round(x.participation / totalPart * 100);
-      html += '<tr><td>' + K.identityBadge(x.identity) + '</td><td class="text-right tnum">' + x.count + '</td><td class="text-right tnum">' + x.participation + '</td><td>' + K.progressHtml(pct, x.participation ? '进行中' : '未开始') + '</td></tr>';
+      const rate = x.expected ? Math.round(x.participation / x.expected * 100) : 0;
+      html += '<tr><td>' + K.identityBadge(x.identity) + '</td><td class="text-right tnum">' + x.count + '</td><td class="text-right tnum">' + x.participation + '/' + x.expected + '</td><td>' + K.progressHtml(rate, x.participation ? '进行中' : '未开始') + '</td></tr>';
     });
-    html += '</tbody></table></div>';
+    html += '</tbody></table>';
+    html += '<div class="text-muted" style="font-size:10px;margin-top:6px">参与率 = 实际参与人次 / 应参与人次（人数 × 场次数）</div></div>';
     // 柱状图
     html += '<div class="bars" style="margin-top:16px">';
     idStats.forEach(x => {
-      const h = Math.round(x.participation / maxPart * 100);
-      html += '<div class="bar-col"><div class="bar-val">' + x.participation + '</div><div class="bar" style="height:' + Math.max(6, h) + '%;background:hsl(' + K.colorFor(x.identity) + ')"></div><div class="bar-label">' + K.escape(x.identity) + '</div></div>';
+      const ratePct = x.expected ? x.participation / x.expected : 0;
+      const h = Math.round(ratePct / maxPart * 100);
+      html += '<div class="bar-col"><div class="bar-val">' + (x.expected ? Math.round(ratePct * 100) + '%' : '—') + '</div><div class="bar" style="height:' + Math.max(6, h) + '%;background:' + K.colorFor(x.identity) + '"></div><div class="bar-label">' + K.escape(x.identity) + '</div></div>';
     });
     html += '</div>';
-    if (totalPart <= 1 && idStats.every(x => !x.participation)) {
+    if (idStats.every(x => !x.participation)) {
       html += '<div class="empty" style="padding:18px 0">' + K.icon('users', 32) + '<div class="text-sm">暂无参与记录</div></div>';
     }
     html += '</div>';
@@ -224,4 +238,7 @@ function exportCheckinStats() {
 </script>
 </body>
 </html>
+
+
+
 

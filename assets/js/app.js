@@ -1,5 +1,5 @@
 /* ==========================================================================
-   投资管理训练营 · 运营进度看板 — 数据层与共享运行时 app.js
+   澎π计划AI训练营 · 运营进度看板 — 数据层与共享运行时 app.js
    依赖：assets/js/data.js (window.KANBAN_DATA)
    暴露：window.K
    ========================================================================== */
@@ -13,7 +13,7 @@
   /* ---------- 基础工具 ---------- */
   K.escape = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
   K.fmt = {};
-  K.fmt.date = (s) => { if (!s) return '—'; const m = s.match(/\d{4}-(\d{2})-(\d{2})/); return m ? `${m[1]}.${m[2]}` : s; };
+  K.fmt.date = (s) => { if (!s) return '—'; const m = s.match(/(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[1]}/${+m[2]}/${+m[3]}` : s; };
   K.fmt.datetime = (s) => s ? s.replace(/-/g, '/').replace('T', ' ') : '—';
   K.pct = (n) => `${Math.round(n)}%`;
 
@@ -50,6 +50,14 @@
     const idTypes = ['成员', '志愿者', '内部导师', '外部导师'];
     const members = teamId ? K.members(teamId) : (D.members || []);
     const checkins = teamId ? K.checkins(teamId) : (D.checkins || []);
+    // 每队打卡场次数
+    const checkinRounds = {};
+    checkins.forEach(c => {
+      checkinRounds[c.teamId] = (checkinRounds[c.teamId] || 0) + 1;
+    });
+    const avgRounds = Object.keys(checkinRounds).length
+      ? Math.round(Object.values(checkinRounds).reduce((a, b) => a + b, 0) / Object.keys(checkinRounds).length)
+      : 0;
     return idTypes.map(t => {
       const ms = members.filter(m => m.identity === t);
       let participation = 0;
@@ -61,7 +69,8 @@
           const m = K.member(id); return m && m.identity === t;
         }).length;
       });
-      return { identity: t, count: ms.length, participation };
+      const expected = ms.length * avgRounds;
+      return { identity: t, count: ms.length, participation, expected };
     });
   };
 
@@ -114,7 +123,7 @@
   K.identityBadge = (identity) => `<span class="identity-badge id-${K.escape(identity)}">${K.escape(identity)}</span>`;
   K.avatar = (name, size = '') => {
     const sz = size ? `avatar-${size}` : '';
-    return `<div class="avatar ${sz}" style="background:hsl(${K.colorFor(name)})">${K.escape(K.initials(name))}</div>`;
+    return `<div class="avatar ${sz}" style="background:var(--secondary)">${K.escape(K.initials(name))}</div>`;
   };
   K.avatarStack = (ids, max = 4) => {
     const list = (ids || []).slice(0, max);
@@ -126,9 +135,9 @@
     return html;
   };
   K.photoThumb = (filename) => `<div class="photo-thumb">${K.icon('image', 22)}<div class="ph-name">${K.escape(filename)}</div></div>`;
-  K.statCard = ({ label, value, unit, foot, ico, icoColor, variant }) => `
+  K.statCard = ({ label, value, unit, foot, ico, variant }) => `
     <div class="stat ${variant ? 'is-' + variant : ''}">
-      <div class="stat-label">${ico ? `<span class="stat-ico" style="${icoColor ? `background:hsl(${icoColor} / 0.12);color:hsl(${icoColor})` : ''}">${ico}</span>` : ''}${K.escape(label)}</div>
+      <div class="stat-label">${ico ? `<span class="stat-ico">${ico}</span>` : ''}${K.escape(label)}</div>
       <div class="stat-value">${value}${unit ? `<span class="unit">${K.escape(unit)}</span>` : ''}</div>
       ${foot ? `<div class="stat-foot">${foot}</div>` : ''}
     </div>`;
@@ -160,7 +169,6 @@
           <div class="brand-mark">营</div>
           <div class="brand-text">
             <div class="brand-name">${K.escape(meta.campName || '训练营')}</div>
-            <div class="brand-sub">${K.fmt.date(meta.cycleStart)} – ${K.fmt.date(meta.cycleEnd)}</div>
           </div>
         </div>
         <nav class="nav-section">${navHtml}</nav>
@@ -200,7 +208,7 @@
   K.toast = function (msg, type) {
     const t = document.createElement('div');
     t.textContent = msg;
-    t.style.cssText = `position:fixed;right:24px;bottom:24px;z-index:999;padding:11px 18px;border-radius:8px;background:${type === 'error' ? 'hsl(0 72% 42%)' : 'hsl(212 54% 24%)'};color:#fff;font-size:13px;box-shadow:0 8px 30px hsl(215 25% 18% / 0.15);opacity:0;transition:opacity .2s`;
+    t.style.cssText = `position:fixed;right:24px;bottom:24px;z-index:999;padding:11px 18px;border-radius:var(--radius);background:${type === 'error' ? 'var(--destructive)' : 'var(--secondary)'};color:#fff;font-size:13px;box-shadow:0 8px 30px rgba(0,0,0,0.18);opacity:0;transition:opacity .2s`;
     document.body.appendChild(t);
     requestAnimationFrame(() => t.style.opacity = '1');
     setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 250); }, 2400);
@@ -246,7 +254,7 @@
       const len = pct * circumference;
       const dash = `${len} ${circumference - len}`;
       const dashoffset = -offset;
-      segments += `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="hsl(${d.color})" stroke-width="${stroke}" stroke-dasharray="${dash}" stroke-dashoffset="${dashoffset}" transform="rotate(-90 ${cx} ${cy})" style="transition: stroke-dasharray 0.5s ease"/>`;
+      segments += `<circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke-width="${stroke}" stroke-dasharray="${dash}" stroke-dashoffset="${dashoffset}" transform="rotate(-90 ${cx} ${cy})" style="stroke:${d.color};transition:stroke-dasharray .5s ease"/>`;
       offset += len;
     });
 
@@ -255,7 +263,7 @@
     const legend = data.map(d => {
       const pct = Math.round(d.value / total * 100);
       return `<div class="dl-row">
-        <span class="dl-sw" style="background:hsl(${d.color})"></span>
+        <span class="dl-sw" style="background:${d.color}"></span>
         <span class="dl-label">${K.escape(d.label)}</span>
         <span class="dl-val">${d.value}</span>
         <span class="dl-pct">${pct}%</span>
@@ -265,7 +273,7 @@
     return `<div class="donut-wrap">
       <div class="donut" style="width:${size}px;height:${size}px">
         <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="position:absolute;inset:0">
-          <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke="hsl(var(--muted))" stroke-width="${stroke}" opacity="0.3"/>
+          <circle cx="${cx}" cy="${cy}" r="${radius}" fill="none" stroke-width="${stroke}" style="stroke:var(--muted);opacity:0.3"/>
           ${segments}
         </svg>
         <div class="donut-center">
@@ -280,36 +288,64 @@
   // 热力图（Heatmap）— 用于打卡活跃度
   K.heatmap = function (checkins, opts) {
     opts = opts || {};
-    const weeks = opts.weeks || 12; // 最近 12 周
     const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(startDate.getDate() - (weeks * 7 - 1));
-    // 对齐到周一
-    const dayOfWeek = startDate.getDay() || 7;
-    startDate.setDate(startDate.getDate() - dayOfWeek + 1);
+    const meta = D.meta || {};
 
-    // 统计每天打卡数
+    // 统计每天打卡数（使用 activityTime 字段）
     const dateCount = {};
     checkins.forEach(c => {
-      if (!c.date) return;
-      const d = c.date.slice(0, 10);
+      const raw = c.activityTime || c.date || '';
+      if (!raw) return;
+      const d = raw.slice(0, 10);
       dateCount[d] = (dateCount[d] || 0) + 1;
     });
 
-    // 生成网格
+    // 起始日期：对齐到周一
+    let startDate;
+    const cycleStartDate = meta.cycleStart ? new Date(meta.cycleStart) : null;
+    if (cycleStartDate && !isNaN(cycleStartDate)) {
+      startDate = new Date(cycleStartDate);
+    } else if (Object.keys(dateCount).length) {
+      startDate = new Date(Object.keys(dateCount).sort()[0]);
+    } else {
+      startDate = new Date(today);
+    }
+    const dayOfWeek = startDate.getDay() || 7;
+    startDate.setDate(startDate.getDate() - dayOfWeek + 1);
+
+    // 结束日期：始终到周期结束
+    let endDate;
+    const cycleEndDate = meta.cycleEnd ? new Date(meta.cycleEnd) : null;
+    if (cycleEndDate && !isNaN(cycleEndDate)) {
+      endDate = new Date(cycleEndDate);
+    } else {
+      endDate = new Date(today);
+    }
+    endDate.setHours(23, 59, 59, 999);
+    if (endDate < startDate) endDate = new Date(startDate);
+
+    const totalDays = Math.ceil((endDate - startDate) / 86400000);
+    const weeks = Math.max(1, Math.ceil(totalDays / 7));
+
     const dayLabels = ['一', '二', '三', '四', '五', '六', '日'];
     const maxCount = Math.max(1, ...Object.values(dateCount));
+    const gridCols = '20px repeat(' + weeks + ',minmax(0,1fr))';
+
     let rows = '';
     for (let dow = 0; dow < 7; dow++) {
       let cells = '';
       for (let w = 0; w < weeks; w++) {
         const d = new Date(startDate);
         d.setDate(d.getDate() + w * 7 + dow);
-        if (d > today) {
-          cells += '<div class="heatmap-cell" style="opacity:0.3"></div>';
+        const ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        if (d > endDate) {
+          cells += '<div class="heatmap-cell empty"></div>';
           continue;
         }
-        const ds = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        if (d > today) {
+          cells += '<div class="heatmap-cell future" title="' + ds + ': 未开始"></div>';
+          continue;
+        }
         const count = dateCount[ds] || 0;
         let level = '';
         if (count > 0) {
@@ -319,24 +355,24 @@
           else if (ratio > 0.25) level = 'l2';
           else level = 'l1';
         }
-        cells += `<div class="heatmap-cell ${level}" title="${ds}: ${count}次打卡"></div>`;
+        cells += '<div class="heatmap-cell ' + level + '" title="' + ds + ': ' + count + '次打卡"></div>';
       }
-      rows += `<div class="heatmap-row"><span class="heatmap-label">${dayLabels[dow]}</span>${cells}</div>`;
+      rows += '<div class="heatmap-row" style="grid-template-columns:' + gridCols + '"><span class="heatmap-label">' + dayLabels[dow] + '</span>' + cells + '</div>';
     }
 
-    // 周标签
-    let weekLabels = '';
+    // 周标签：每 2 周显示一个，避免拥挤
+    let weekLabels = '<span></span>';
     for (let w = 0; w < weeks; w++) {
       const d = new Date(startDate);
       d.setDate(d.getDate() + w * 7);
-      const label = `${d.getMonth()+1}.${d.getDate()}`;
-      weekLabels += `<span>${label}</span>`;
+      if (w % 2 === 0) {
+        weekLabels += '<span>' + (d.getMonth()+1) + '.' + d.getDate() + '</span>';
+      } else {
+        weekLabels += '<span></span>';
+      }
     }
 
-    return `<div class="heatmap">
-      <div class="heatmap-weeks">${weekLabels}</div>
-      ${rows}
-    </div>`;
+    return '<div class="heatmap"><div class="heatmap-weeks" style="grid-template-columns:' + gridCols + '">' + weekLabels + '</div>' + rows + '</div>';
   };
 
   // 趋势柱状图 — 用于双周报提交趋势

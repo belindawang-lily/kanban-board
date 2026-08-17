@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OKR 管理 · 投资管理训练营运营进度看板</title>
-<link rel="stylesheet" href="assets/css/kanban.css?v=2">
+<title>OKR 管理 · 澎π计划AI训练营运营进度看板</title>
+<link rel="stylesheet" href="assets/css/kanban.css?v=10">
 </head>
 <body>
 <script src="assets/js/data.js"></script>
@@ -58,7 +58,7 @@
     html += '<div class="legend" style="flex-direction:column;align-items:flex-start;gap:10px">';
     statusList.forEach(st => {
       const n = krs.filter(k => k.status === st).length;
-      html += `<span class="lg" style="font-size:13px"><span class="lg-sw" style="background:hsl(${statusColor[st]})"></span>${K.statusChip(st)} <span class="tnum" style="margin-left:4px">${n}</span></span>`;
+      html += `<span class="lg" style="font-size:13px"><span class="lg-sw" style="background:${statusColor[st]}"></span>${K.statusChip(st)} <span class="tnum" style="margin-left:4px">${n}</span></span>`;
     });
     html += '</div></div>';
     html += '</div>';
@@ -90,6 +90,10 @@
             html += `<span class="kr-title">${K.escape(k.title)}</span>`;
             html += `<span style="min-width:140px">${K.progressHtml(k.progress, k.status)}</span>`;
             html += `<span class="nowrap">${K.statusChip(k.status)}</span>`;
+            if (k.plannedDate) {
+              const isOverdue = k.status !== '已完成' && new Date(k.plannedDate) < new Date();
+              html += `<span class="text-sm nowrap" style="color:${isOverdue ? 'var(--c-risk)' : 'var(--muted-foreground)'};font-weight:${isOverdue ? '600' : '400'}">${K.icon('clock', 12)} ${K.escape(k.plannedDate)}</span>`;
+            }
             html += `<span class="text-muted text-sm nowrap">更新 ${K.fmt.date(k.updatedAt)}</span>`;
             if (canEdit) {
               html += `<button class="btn btn-ghost btn-sm" onclick="K.feishuTip('keyResults','编辑 KR')">${K.icon('edit', 13)} 编辑</button>`;
@@ -105,9 +109,9 @@
     }
 
     // 3. 权限提示卡
-    html += '<div class="card card-pad" style="background:hsl(var(--muted) / 0.35);border-color:hsl(var(--border))">';
+    html += '<div class="card card-pad" style="background:color-mix(in srgb, var(--muted) 35%, transparent);border-color:var(--border)">';
     html += '<div class="flex items-center gap-3">';
-    html += `<span class="stat-ico" style="background:hsl(var(--accent) / 0.3);color:hsl(var(--accent-foreground));flex-shrink:0">${K.icon('check', 16)}</span>`;
+    html += `<span class="stat-ico" style="background:color-mix(in srgb, var(--accent) 30%, transparent);color:var(--accent-foreground);flex-shrink:0">${K.icon('check', 16)}</span>`;
     html += '<div>';
     html += `<div class="cell-strong text-sm">权限说明</div>`;
     html += `<div class="text-sm text-muted mt-2">数据编辑请在飞书多维表格中操作，点击右上角「打开飞书」按钮。</div>`;
@@ -144,7 +148,7 @@
         html += `<td class="text-right tnum">${tObjs.length}</td>`;
         html += `<td class="text-right tnum">${tKrs.length}</td>`;
         html += `<td>${K.progressHtml(tProg, tProg === 100 ? '已完成' : tProg === 0 ? '未开始' : '进行中')}</td>`;
-        html += `<td class="text-right tnum">${tRisk > 0 ? `<span style="color:hsl(var(--c-risk));font-weight:600">${tRisk}</span>` : '0'}</td>`;
+        html += `<td class="text-right tnum">${tRisk > 0 ? `<span style="color:var(--c-risk);font-weight:600">${tRisk}</span>` : '0'}</td>`;
         html += `<td class="text-right"><span class="btn btn-outline btn-sm" onclick="event.stopPropagation();location.href='okr.html?team=${t.id}'">${K.icon('arrow', 13)} 查看</span></td>`;
         html += '</tr>';
       });
@@ -157,4 +161,7 @@
 </script>
 </body>
 </html>
+
+
+
 

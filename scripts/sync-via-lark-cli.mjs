@@ -30,7 +30,7 @@ const TABLE_IDS = {
   reports: 'tblspHuh1hALM8AU',
   checkins: 'tblaCysgJ53PqNEL',
 };
-const CAMP_NAME = '投资管理训练营';
+const CAMP_NAME = '澎π计划AI训练营';
 
 // ---------- lark-cli 调用 ----------
 function larkCli(args) {

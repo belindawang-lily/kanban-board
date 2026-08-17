@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>双周报 · 投资管理训练营运营进度看板</title>
-<link rel="stylesheet" href="assets/css/kanban.css?v=2">
+<title>双周报 · 澎π计划AI训练营运营进度看板</title>
+<link rel="stylesheet" href="assets/css/kanban.css?v=10">
 </head>
 <body>
 <script src="assets/js/data.js"></script>
@@ -71,7 +71,8 @@
         html += '<tr>';
         html += `<td class="cell-strong">${K.escape(t.name)}</td>`;
         html += `<td class="text-right tnum">${rs.length}/6</td>`;
-        html += `<td class="cell-muted text-sm">${latest ? K.escape(latest.title || latest.period) : '<span class="text-muted">未提交</span>'}</td>`;
+        const latestDisplay = latest ? ((latest.title && !/^recv[a-z0-9]/.test(latest.title)) ? latest.title : (latest.period || '—')) : null;
+        html += `<td class="cell-muted text-sm">${latestDisplay ? K.escape(latestDisplay) : '<span class="text-muted">未提交</span>'}</td>`;
         html += `<td class="text-sm">${recorders.length ? recorders.map(n => K.escape(n)).join('、') : '—'}</td>`;
         html += `<td class="text-right"><button class="btn btn-outline btn-sm" onclick="location.href=\'biweekly-report.html?team=${t.id}\'">${K.icon('arrow', 13)} 查看</button></td>`;
         html += '</tr>';
@@ -84,7 +85,7 @@
     html += '<div class="card-head" style="padding:0 0 12px;border:none"><h2>填报流程</h2><div class="head-spacer"></div><span class="text-muted text-sm">支持本队多人协作填报</span></div>';
     html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">';
     ['自动带出本队当前 OKR 列表', '勾选本期有进展的 KR', '更新进度与状态', '提交后同步回 OKR 模块，避免重复维护'].forEach(s => {
-      html += `<div class="flex items-center gap-2 text-sm"><span style="width:22px;height:22px;border-radius:50%;background:hsl(var(--c-done) / 0.18);color:hsl(var(--c-done));display:grid;place-items:center;flex-shrink:0">${K.icon('check', 13)}</span><span>${K.escape(s)}</span></div>`;
+      html += `<div class="flex items-center gap-2 text-sm"><span style="width:22px;height:22px;border-radius:50%;background:color-mix(in srgb, var(--c-done) 18%, transparent);color:var(--c-done);display:grid;place-items:center;flex-shrink:0">${K.icon('check', 13)}</span><span>${K.escape(s)}</span></div>`;
     });
     html += '</div></div>';
 
@@ -120,23 +121,25 @@
 
         // 头：period + 记录人 + createdAt
         html += '<div class="flex items-center justify-between gap-3 mb-3" style="flex-wrap:wrap">';
-        html += '<h3 style="font-size:1.05rem">' + K.escape(r.title || r.period) + '</h3>';
+        const rptTitle = (r.title && !/^recv[a-z0-9]/.test(r.title)) ? r.title : (r.period && !/^recv[a-z0-9]/.test(r.period) ? r.period : '未命名报告');
+        html += '<h3 style="font-size:1.05rem">' + K.escape(rptTitle) + '</h3>';
         html += '<div class="flex items-center gap-2 text-sm text-muted">' + K.avatar(r.recorder, 'sm') + '<span>' + K.escape(r.recorder) + '</span><span>·</span>' + K.icon('clock', 13) + '<span>' + K.fmt.date(r.createdAt) + '</span></div>';
         html += '</div>';
 
         // 本期进展
-        html += '<div style="margin-bottom:14px"><div class="text-sm" style="font-weight:600;color:hsl(var(--foreground) / 0.75);margin-bottom:6px">本期进展</div><p style="margin:0;font-size:13px;line-height:1.6">' + K.escape(r.progressSummary || '—') + '</p></div>';
+        html += '<div style="margin-bottom:14px"><div class="text-sm" style="font-weight:600;color:color-mix(in srgb, var(--foreground) 75%, transparent);margin-bottom:6px">本期进展</div><p style="margin:0;font-size:13px;line-height:1.6">' + K.escape(r.progressSummary || '—') + '</p></div>';
 
         // 问题与需求
-        html += '<div style="margin-bottom:14px"><div class="flex items-center gap-1 text-sm" style="font-weight:600;color:hsl(var(--c-risk));margin-bottom:6px">' + K.icon('alert', 14) + '<span>问题与需求</span></div><p style="margin:0;font-size:13px;line-height:1.6">' + K.escape(r.problemsNeeds || '—') + '</p></div>';
+        html += '<div style="margin-bottom:14px"><div class="flex items-center gap-1 text-sm" style="font-weight:600;color:var(--c-risk);margin-bottom:6px">' + K.icon('alert', 14) + '<span>问题与需求</span></div><p style="margin:0;font-size:13px;line-height:1.6">' + K.escape(r.problemsNeeds || '—') + '</p></div>';
 
         // 本期 KR 更新
         const krs = r.krUpdates || [];
-        html += '<div><div class="flex items-center gap-2 mb-2"><span class="text-sm" style="font-weight:600">本期 KR 更新</span><span class="chip" style="background:hsl(var(--c-done) / 0.16);color:hsl(var(--c-done));font-size:11px">' + K.icon('check', 12) + ' 已同步回 OKR 模块</span></div>';
+        html += '<div><div class="flex items-center gap-2 mb-2"><span class="text-sm" style="font-weight:600">本期 KR 更新</span><span class="chip" style="background:color-mix(in srgb, var(--c-done) 16%, transparent);color:var(--c-done);font-size:11px">' + K.icon('check', 12) + ' 已同步回 OKR 模块</span></div>';
         if (krs.length) {
           html += '<div style="display:flex;flex-direction:column;gap:2px">';
-          krs.forEach(k => {
-            html += '<div class="kr-row"><span class="kr-tag">' + K.escape(k.krId) + '</span><span class="kr-title">' + K.escape(k.title) + '</span>' + K.progressHtml(k.progress, k.status) + K.statusChip(k.status) + '</div>';
+          krs.forEach((k, idx) => {
+            const krTitle = k.title || ('KR' + (idx + 1));
+            html += '<div class="kr-row"><span class="kr-tag">KR' + (idx + 1) + '</span><span class="kr-title">' + K.escape(krTitle) + '</span>' + K.progressHtml(k.progress, k.status) + K.statusChip(k.status) + '</div>';
           });
           html += '</div>';
         } else {
@@ -155,7 +158,7 @@
     html += '<div class="card-head" style="padding:0 0 12px;border:none"><h2>填报流程</h2><div class="head-spacer"></div><span class="text-muted text-sm">支持本队多人协作填报</span></div>';
     html += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">';
     ['自动带出本队当前 OKR 列表', '勾选本期有进展的 KR', '更新进度与状态', '提交后同步回 OKR 模块，避免重复维护'].forEach(s => {
-      html += `<div class="flex items-center gap-2 text-sm"><span style="width:22px;height:22px;border-radius:50%;background:hsl(var(--c-done) / 0.18);color:hsl(var(--c-done));display:grid;place-items:center;flex-shrink:0">${K.icon('check', 13)}</span><span>${K.escape(s)}</span></div>`;
+      html += `<div class="flex items-center gap-2 text-sm"><span style="width:22px;height:22px;border-radius:50%;background:color-mix(in srgb, var(--c-done) 18%, transparent);color:var(--c-done);display:grid;place-items:center;flex-shrink:0">${K.icon('check', 13)}</span><span>${K.escape(s)}</span></div>`;
     });
     html += '</div></div>';
   }
@@ -165,4 +168,7 @@
 </script>
 </body>
 </html>
+
+
+
 

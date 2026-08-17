@@ -31,7 +31,7 @@ const TABLE_IDS = {
   reports: 'tblspHuh1hALM8AU',
   checkins: 'tblaCysgJ53PqNEL',
 };
-const CAMP_NAME = '投资管理训练营';
+const CAMP_NAME = '澎π计划AI训练营';
 
 const APP_ID = process.env.FEISHU_APP_ID;
 const APP_SECRET = process.env.FEISHU_APP_SECRET;
@@ -229,12 +229,24 @@ async function main() {
     }
     const rawProgress = num(getField(r, '进度'));
     const progress = rawProgress > 1 ? Math.round(rawProgress) : Math.round(rawProgress * 100);
+    const plannedDate = dateOnly(getField(r, 'KR计划完成时间'));
+    const rawStatus = sel(getField(r, '状态')) || '进行中';
+    // 风险重算：未完成且超过计划完成时间 → 有风险
+    let status = rawStatus;
+    if (rawStatus !== '已完成' && plannedDate) {
+      const today = new Date();
+      const planned = new Date(plannedDate);
+      if (planned < today) {
+        status = '有风险';
+      }
+    }
     return {
       id, objectiveId, teamId,
       title: txt(getField(r, 'KR标题')),
       progress,
-      status: sel(getField(r, '状态')) || '进行中',
-      updatedAt: dateOnly(getField(r, '更新时间')),
+      status,
+      plannedDate,
+      updatedAt: dateOnly(getField(r, 'KR状态更新时间') || getField(r, '更新时间')),
     };
   });
 
