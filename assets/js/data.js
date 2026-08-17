@@ -1,11 +1,11 @@
-// 由 sync-feishu-api.mjs 自动同步：2026/8/17 16:31:44
+// 由 sync-feishu-api.mjs 自动同步：2026/8/17 16:36:45
 // 数据来源：飞书开放平台 API（GitHub Actions 自动同步）
 window.KANBAN_DATA = {
   "meta": {
     "campName": "澎π计划AI训练营",
-    "cycleStart": "2026-07-14",
-    "cycleEnd": "2027-03-30",
-    "syncedAt": "2026/8/17 16:31:44",
+    "cycleStart": "2026-07-15",
+    "cycleEnd": "2027-03-31",
+    "syncedAt": "2026/8/17 16:36:45",
     "source": "feishu-api (GitHub Actions)",
     "note": "由 scripts/sync-feishu-api.mjs 从飞书开放平台 API 同步。"
   },
@@ -45,8 +45,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4eOxoX7q",
       "name": "团队1",
       "topic": "智能投研助手构建",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4kf0QNeR",
       "leader": "赵晓辉",
@@ -56,8 +56,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4ff71mzF",
       "name": "团队2",
       "topic": "风险预警模型开发",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4mzJrdis",
       "leader": "胡洋",
@@ -67,8 +67,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4fHhFCbD",
       "name": "团队3",
       "topic": "客户画像与精准营销",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4oUME6v2",
       "leader": "李清华",
@@ -78,8 +78,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4g9nonVc",
       "name": "团队4",
       "topic": "交易异常检测系统",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4rhNwy2x",
       "leader": "徐家俊",
@@ -89,8 +89,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4gD7BTow",
       "name": "团队5",
       "topic": "智能研报生成平台",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4tz8rqZg",
       "leader": "林子衡",
@@ -100,8 +100,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4h4gg6z0",
       "name": "团队6",
       "topic": "合规审查自动化",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4vRX3FYW",
       "leader": "李宁萍",
@@ -111,8 +111,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4hwTlvaK",
       "name": "团队7",
       "topic": "投资组合优化引擎",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4yigfGCa",
       "leader": "邹昱旻",
@@ -122,8 +122,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4hXbkmcF",
       "name": "团队8",
       "topic": "数据治理与资产目录",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4AEKED3p",
       "leader": "苗园莉",
@@ -133,8 +133,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4iqSii73",
       "name": "团队9",
       "topic": "智能客服与知识库",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4CXynR4h",
       "leader": "郑仁祺",
@@ -144,8 +144,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4iRNsuLE",
       "name": "团队10",
       "topic": "信贷风控模型升级",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4FfVB4Fr",
       "leader": "刘泽钊",
@@ -155,8 +155,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4jlhOxoo",
       "name": "团队11",
       "topic": "经营分析驾驶舱",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4HBVvKda",
       "leader": "刘烨萌",
@@ -166,8 +166,8 @@ window.KANBAN_DATA = {
       "id": "recvsh4jMH31rt",
       "name": "团队12",
       "topic": "监管报送自动化",
-      "cycleStart": "2026-07-14",
-      "cycleEnd": "2027-03-30",
+      "cycleStart": "2026-07-15",
+      "cycleEnd": "2027-03-31",
       "status": "运转中",
       "leaderId": "recvsh4JZGeNG9",
       "leader": "王泰生",
@@ -834,8 +834,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh4XtHiZpZ",
@@ -844,8 +844,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh4XVUBiyw",
@@ -854,8 +854,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 85,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh4YnFeAo6",
@@ -864,8 +864,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 70,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh4YPLs5ck",
@@ -874,8 +874,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh4ZhT8mBc",
@@ -884,8 +884,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh4ZLvYzMR",
@@ -894,8 +894,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh50dvkvZw",
@@ -904,8 +904,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 95,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh50Gsdaxy",
@@ -914,8 +914,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 80,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh518QDCGx",
@@ -924,8 +924,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 60,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh51BFGrJD",
@@ -934,8 +934,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh5248y00X",
@@ -944,8 +944,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh52wSFRyZ",
@@ -954,8 +954,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh52Z8ErKA",
@@ -964,8 +964,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 90,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh53seM0i1",
@@ -974,8 +974,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 75,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh53UvJ5c7",
@@ -984,8 +984,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 55,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh54nuIbiR",
@@ -994,8 +994,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh54PUSHr9",
@@ -1004,8 +1004,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh55itHTBf",
@@ -1014,8 +1014,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 95,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh55Ms1SqR",
@@ -1024,8 +1024,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 85,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh56fXMYZi",
@@ -1034,8 +1034,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 70,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh56IKSC9i",
@@ -1044,8 +1044,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 50,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh57bRMzk3",
@@ -1054,8 +1054,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh57EhajHz",
@@ -1064,8 +1064,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh586DVm2b",
@@ -1074,8 +1074,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh58zqcGK4",
@@ -1084,8 +1084,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh5930C8Sy",
@@ -1094,8 +1094,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 90,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh59wKlhkT",
@@ -1104,8 +1104,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 75,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh5a05JGZO",
@@ -1114,8 +1114,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh5atiVogU",
@@ -1124,8 +1124,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh5aVWcesi",
@@ -1134,8 +1134,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 90,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh5bnB24sQ",
@@ -1144,8 +1144,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 80,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh5bRTEwog",
@@ -1154,8 +1154,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 65,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh5cklcbnc",
@@ -1164,8 +1164,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 45,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh5cMBUcPr",
@@ -1174,8 +1174,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh5dfkqgKf",
@@ -1184,8 +1184,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh5dIfcMJM",
@@ -1194,8 +1194,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh5ebtBjLn",
@@ -1204,8 +1204,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 95,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh5eF3jBKn",
@@ -1214,8 +1214,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 85,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh5f9lkQvM",
@@ -1224,8 +1224,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 70,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh5fCjDiZX",
@@ -1234,8 +1234,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh5g5xHR1K",
@@ -1244,8 +1244,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh5gyTN5u2",
@@ -1254,8 +1254,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 85,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh5h1Fu5A2",
@@ -1264,8 +1264,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 75,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh5hugFfQj",
@@ -1274,8 +1274,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 60,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh5hWm6GcH",
@@ -1284,8 +1284,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 40,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh5ipBEbhj",
@@ -1294,8 +1294,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh5iT1EoJ2",
@@ -1304,8 +1304,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh5jmyC58o",
@@ -1314,8 +1314,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh5jP3ZCSg",
@@ -1324,8 +1324,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 90,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh5kjrtbSu",
@@ -1334,8 +1334,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 80,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh5kNceMGc",
@@ -1344,8 +1344,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 65,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh5lifJTtv",
@@ -1354,8 +1354,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh5lKgtmxe",
@@ -1364,8 +1364,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh5mdwMBDZ",
@@ -1374,8 +1374,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 95,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh5mF5ZLwB",
@@ -1384,8 +1384,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 85,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh5n7IwNlP",
@@ -1394,8 +1394,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 75,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh5nB1yZ39",
@@ -1404,8 +1404,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 55,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh5o4PyJJ0",
@@ -1414,8 +1414,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh5ox1by84",
@@ -1424,8 +1424,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh5p0Lh95v",
@@ -1434,8 +1434,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh5pu5Groy",
@@ -1444,8 +1444,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 100,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh5pX1un3K",
@@ -1454,8 +1454,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 80,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh5qpzLYxW",
@@ -1464,8 +1464,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 65,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh5qRy71St",
@@ -1474,8 +1474,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh5rj5nmPl",
@@ -1484,8 +1484,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     },
     {
       "id": "recvsh5rLvW7bW",
@@ -1494,8 +1494,8 @@ window.KANBAN_DATA = {
       "title": "完成业务场景调研，覆盖3个核心部门",
       "progress": 80,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-04"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-05"
     },
     {
       "id": "recvsh5se6M9zM",
@@ -1504,8 +1504,8 @@ window.KANBAN_DATA = {
       "title": "产出需求规格说明书并通过评审",
       "progress": 70,
       "status": "已完成",
-      "plannedDate": "2026-09-29",
-      "updatedAt": "2026-08-07"
+      "plannedDate": "2026-09-30",
+      "updatedAt": "2026-08-08"
     },
     {
       "id": "recvsh5sIKXy7C",
@@ -1514,8 +1514,8 @@ window.KANBAN_DATA = {
       "title": "完成技术选型与架构方案",
       "progress": 55,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-09"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-10"
     },
     {
       "id": "recvsh5tb5030p",
@@ -1524,8 +1524,8 @@ window.KANBAN_DATA = {
       "title": "完成核心功能开发与联调测试",
       "progress": 35,
       "status": "进行中",
-      "plannedDate": "2026-11-29",
-      "updatedAt": "2026-08-11"
+      "plannedDate": "2026-11-30",
+      "updatedAt": "2026-08-12"
     },
     {
       "id": "recvsh5tDsv2dx",
@@ -1534,8 +1534,8 @@ window.KANBAN_DATA = {
       "title": "完成UAT验收并修复全部P0缺陷",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-05"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-06"
     },
     {
       "id": "recvsh5u5ddY4V",
@@ -1544,8 +1544,8 @@ window.KANBAN_DATA = {
       "title": "完成试点上线并收集用户反馈",
       "progress": 0,
       "status": "未开始",
-      "plannedDate": "2027-02-14",
-      "updatedAt": "2026-08-02"
+      "plannedDate": "2027-02-15",
+      "updatedAt": "2026-08-03"
     }
   ],
   "biweeklyReports": [
@@ -1571,7 +1571,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5v3M7WL1",
@@ -1595,7 +1595,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5vxHs1we",
@@ -1619,7 +1619,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5w1hNd1q",
@@ -1643,7 +1643,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5wtMuqh1",
@@ -1667,7 +1667,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5wZUzyIs",
@@ -1691,7 +1691,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5xsspSGx",
@@ -1715,7 +1715,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5xWNeRLf",
@@ -1739,7 +1739,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5yoFbPuT",
@@ -1763,7 +1763,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5ySuScCv",
@@ -1787,7 +1787,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5zkFvoMp",
@@ -1811,7 +1811,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5zOHGNCo",
@@ -1835,7 +1835,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-07-25"
+      "createdAt": "2026-07-26"
     },
     {
       "id": "recvsh5Ahjd9Km",
@@ -1859,7 +1859,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     },
     {
       "id": "recvsh5AJigJB8",
@@ -1883,7 +1883,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     },
     {
       "id": "recvsh5BbQ2CDc",
@@ -1907,7 +1907,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     },
     {
       "id": "recvsh5BE3qm7m",
@@ -1931,7 +1931,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     },
     {
       "id": "recvsh5C6xdBaB",
@@ -1955,7 +1955,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     },
     {
       "id": "recvsh5Czc5yKr",
@@ -1979,7 +1979,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     },
     {
       "id": "recvsh5DvcfCpc",
@@ -2003,7 +2003,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     },
     {
       "id": "recvsh5DXGW1ai",
@@ -2027,7 +2027,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     },
     {
       "id": "recvsh5ErFYGM5",
@@ -2051,7 +2051,7 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     },
     {
       "id": "recvsh5FsiL7NB",
@@ -2075,14 +2075,14 @@ window.KANBAN_DATA = {
           "status": "已完成"
         }
       ],
-      "createdAt": "2026-08-08"
+      "createdAt": "2026-08-09"
     }
   ],
   "checkins": [
     {
       "id": "recvsh5FVAznSX",
       "teamId": "recvsh4eOxoX7q",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "围绕AI模型特征工程研讨，确定首批入模变量18个，完成特征重要性排序。",
       "photos": [
         "LruSbI65RopJATxp5aAcEonZn8g"
@@ -2099,7 +2099,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5GpvcYU0",
       "teamId": "recvsh4eOxoX7q",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "与数据团队联合复盘数据质量问题，形成整改清单8项，已分配责任人。",
       "photos": [],
       "teamParticipantIds": [
@@ -2113,7 +2113,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5GRAJ7DN",
       "teamId": "recvsh4eOxoX7q",
-      "activityTime": "2026-08-03 06:00",
+      "activityTime": "2026-08-03 14:00",
       "content": "组织方案评审会议，完成3个核心场景的技术方案定稿，明确里程碑节点。",
       "photos": [],
       "teamParticipantIds": [
@@ -2129,7 +2129,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5HkHdo2b",
       "teamId": "recvsh4ff71mzF",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "与业务部门进行需求确认，梳理高优需求15项，排定迭代计划。",
       "photos": [],
       "teamParticipantIds": [
@@ -2144,7 +2144,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5HNuie5n",
       "teamId": "recvsh4ff71mzF",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "推进系统联调，完成接口对接5个，发现并修复缺陷3个。",
       "photos": [],
       "teamParticipantIds": [
@@ -2159,7 +2159,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5IfhSDbi",
       "teamId": "recvsh4ff71mzF",
-      "activityTime": "2026-08-04 07:00",
+      "activityTime": "2026-08-04 15:00",
       "content": "模型评估结果复盘，讨论阈值调整方案，确定优化方向3个。",
       "photos": [
         "CkfLb6zlgo8odixfUIacogZNnCb"
@@ -2176,7 +2176,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5IHY2jpi",
       "teamId": "recvsh4fHhFCbD",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "组织内部技术分享，学习RAG最佳实践，讨论在本项目的落地路径。",
       "photos": [],
       "teamParticipantIds": [
@@ -2191,7 +2191,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5JaTtXMD",
       "teamId": "recvsh4fHhFCbD",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "与合规部门沟通数据使用范围，确认脱敏规则与审计要求。",
       "photos": [],
       "teamParticipantIds": [
@@ -2206,7 +2206,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5JCODVpu",
       "teamId": "recvsh4fHhFCbD",
-      "activityTime": "2026-08-05 08:00",
+      "activityTime": "2026-08-05 16:00",
       "content": "围绕AI模型特征工程研讨，确定首批入模变量18个，完成特征重要性排序。",
       "photos": [],
       "teamParticipantIds": [
@@ -2221,7 +2221,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5K53uttv",
       "teamId": "recvsh4g9nonVc",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "与数据团队联合复盘数据质量问题，形成整改清单8项，已分配责任人。",
       "photos": [],
       "teamParticipantIds": [
@@ -2236,7 +2236,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5KxQVDd2",
       "teamId": "recvsh4g9nonVc",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "组织方案评审会议，完成3个核心场景的技术方案定稿，明确里程碑节点。",
       "photos": [],
       "teamParticipantIds": [
@@ -2251,7 +2251,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5KZFZ93F",
       "teamId": "recvsh4g9nonVc",
-      "activityTime": "2026-08-06 06:00",
+      "activityTime": "2026-08-06 14:00",
       "content": "与业务部门进行需求确认，梳理高优需求15项，排定迭代计划。",
       "photos": [],
       "teamParticipantIds": [
@@ -2268,7 +2268,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5LseqPC2",
       "teamId": "recvsh4gD7BTow",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "推进系统联调，完成接口对接5个，发现并修复缺陷3个。",
       "photos": [],
       "teamParticipantIds": [
@@ -2283,7 +2283,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5LULIDiT",
       "teamId": "recvsh4gD7BTow",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "模型评估结果复盘，讨论阈值调整方案，确定优化方向3个。",
       "photos": [],
       "teamParticipantIds": [
@@ -2298,7 +2298,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5MmHDz8o",
       "teamId": "recvsh4gD7BTow",
-      "activityTime": "2026-08-07 07:00",
+      "activityTime": "2026-08-07 15:00",
       "content": "组织内部技术分享，学习RAG最佳实践，讨论在本项目的落地路径。",
       "photos": [],
       "teamParticipantIds": [
@@ -2313,7 +2313,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5MPGMNQn",
       "teamId": "recvsh4h4gg6z0",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "与合规部门沟通数据使用范围，确认脱敏规则与审计要求。",
       "photos": [],
       "teamParticipantIds": [
@@ -2328,7 +2328,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5NiAjfd6",
       "teamId": "recvsh4h4gg6z0",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "围绕AI模型特征工程研讨，确定首批入模变量18个，完成特征重要性排序。",
       "photos": [
         "HgQkb15yeoe151xIVH0cxPzKnPb"
@@ -2345,7 +2345,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5NKwblX0",
       "teamId": "recvsh4h4gg6z0",
-      "activityTime": "2026-08-08 08:00",
+      "activityTime": "2026-08-08 16:00",
       "content": "与数据团队联合复盘数据质量问题，形成整改清单8项，已分配责任人。",
       "photos": [],
       "teamParticipantIds": [
@@ -2361,7 +2361,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5OdFoLMG",
       "teamId": "recvsh4hwTlvaK",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "组织方案评审会议，完成3个核心场景的技术方案定稿，明确里程碑节点。",
       "photos": [],
       "teamParticipantIds": [
@@ -2376,7 +2376,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5OFQO05f",
       "teamId": "recvsh4hwTlvaK",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "与业务部门进行需求确认，梳理高优需求15项，排定迭代计划。",
       "photos": [],
       "teamParticipantIds": [
@@ -2391,7 +2391,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5P8XbtLG",
       "teamId": "recvsh4hwTlvaK",
-      "activityTime": "2026-08-09 06:00",
+      "activityTime": "2026-08-09 14:00",
       "content": "推进系统联调，完成接口对接5个，发现并修复缺陷3个。",
       "photos": [],
       "teamParticipantIds": [
@@ -2406,7 +2406,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5PBv4lpa",
       "teamId": "recvsh4hXbkmcF",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "模型评估结果复盘，讨论阈值调整方案，确定优化方向3个。",
       "photos": [],
       "teamParticipantIds": [
@@ -2421,7 +2421,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5Q3qDBG7",
       "teamId": "recvsh4hXbkmcF",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "组织内部技术分享，学习RAG最佳实践，讨论在本项目的落地路径。",
       "photos": [],
       "teamParticipantIds": [
@@ -2434,7 +2434,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5QuWt3vr",
       "teamId": "recvsh4hXbkmcF",
-      "activityTime": "2026-08-10 07:00",
+      "activityTime": "2026-08-10 15:00",
       "content": "与合规部门沟通数据使用范围，确认脱敏规则与审计要求。",
       "photos": [],
       "teamParticipantIds": [
@@ -2449,7 +2449,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5QWQcGm3",
       "teamId": "recvsh4iqSii73",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "围绕AI模型特征工程研讨，确定首批入模变量18个，完成特征重要性排序。",
       "photos": [],
       "teamParticipantIds": [
@@ -2464,7 +2464,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5Rqw5Tuh",
       "teamId": "recvsh4iqSii73",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "与数据团队联合复盘数据质量问题，形成整改清单8项，已分配责任人。",
       "photos": [],
       "teamParticipantIds": [
@@ -2479,7 +2479,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5RT90FAB",
       "teamId": "recvsh4iqSii73",
-      "activityTime": "2026-08-11 08:00",
+      "activityTime": "2026-08-11 16:00",
       "content": "组织方案评审会议，完成3个核心场景的技术方案定稿，明确里程碑节点。",
       "photos": [],
       "teamParticipantIds": [
@@ -2494,7 +2494,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5SkZuf2E",
       "teamId": "recvsh4iRNsuLE",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "与业务部门进行需求确认，梳理高优需求15项，排定迭代计划。",
       "photos": [],
       "teamParticipantIds": [
@@ -2509,7 +2509,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5SR8oDvP",
       "teamId": "recvsh4iRNsuLE",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "推进系统联调，完成接口对接5个，发现并修复缺陷3个。",
       "photos": [],
       "teamParticipantIds": [
@@ -2524,7 +2524,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5TiATuu0",
       "teamId": "recvsh4iRNsuLE",
-      "activityTime": "2026-08-12 06:00",
+      "activityTime": "2026-08-12 14:00",
       "content": "模型评估结果复盘，讨论阈值调整方案，确定优化方向3个。",
       "photos": [],
       "teamParticipantIds": [
@@ -2539,7 +2539,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5TKDyDHp",
       "teamId": "recvsh4jlhOxoo",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "组织内部技术分享，学习RAG最佳实践，讨论在本项目的落地路径。",
       "photos": [],
       "teamParticipantIds": [
@@ -2554,7 +2554,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5UcNi9OK",
       "teamId": "recvsh4jlhOxoo",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "与合规部门沟通数据使用范围，确认脱敏规则与审计要求。",
       "photos": [],
       "teamParticipantIds": [
@@ -2569,7 +2569,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5UFnEcRv",
       "teamId": "recvsh4jlhOxoo",
-      "activityTime": "2026-08-13 07:00",
+      "activityTime": "2026-08-13 15:00",
       "content": "围绕AI模型特征工程研讨，确定首批入模变量18个，完成特征重要性排序。",
       "photos": [],
       "teamParticipantIds": [
@@ -2584,7 +2584,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5V7e0hlF",
       "teamId": "recvsh4jMH31rt",
-      "activityTime": "2026-07-25 06:00",
+      "activityTime": "2026-07-25 14:00",
       "content": "与数据团队联合复盘数据质量问题，形成整改清单8项，已分配责任人。",
       "photos": [],
       "teamParticipantIds": [
@@ -2600,7 +2600,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5Vz1C4kU",
       "teamId": "recvsh4jMH31rt",
-      "activityTime": "2026-08-15 06:00",
+      "activityTime": "2026-08-15 14:00",
       "content": "组织方案评审会议，完成3个核心场景的技术方案定稿，明确里程碑节点。",
       "photos": [],
       "teamParticipantIds": [
@@ -2614,7 +2614,7 @@ window.KANBAN_DATA = {
     {
       "id": "recvsh5W2d8fCg",
       "teamId": "recvsh4jMH31rt",
-      "activityTime": "2026-08-14 08:00",
+      "activityTime": "2026-08-14 16:00",
       "content": "与业务部门进行需求确认，梳理高优需求15项，排定迭代计划。",
       "photos": [],
       "teamParticipantIds": [
