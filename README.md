@@ -2,28 +2,40 @@
 
 面向训练营运营的进度看板系统，覆盖 **总看板 / 队伍管理 / OKR / 双周报 / 日常打卡 / 一键快报** 六大模块。
 
-数据源：飞书多维表格。看板为**静态快照**——飞书数据更新后需运行同步脚本刷新。
+数据源：飞书多维表格。GitHub Actions 每天自动同步数据并部署到公网。
+
+**公网访问地址**：`https://belindawang-lily.github.io/kanban-board/`
 
 ---
 
-## 一、系统架构与限制
+## 一、系统架构
 
 ### 工作原理
 
 ```
-飞书多维表格（数据源）  →  同步脚本  →  data.js（静态快照）  →  HTML 看板（展示）
+飞书多维表格（数据源）  →  GitHub Actions 自动同步（每天2次）  →  data.js  →  GitHub Pages 公网展示
 ```
 
-- 看板是纯 HTML + CSS + JS，双击即用，可离线查看
-- `data.js` 是飞书数据的**静态快照**，不是实时读取
-- 飞书中数据变动后，管理员需手动运行同步脚本刷新 `data.js`
+- 队员在飞书 Base 中填报数据
+- GitHub Actions 每天 8:00 / 20:00（北京时间）自动拉取飞书数据并部署
+- 看板支持公网访问，领导无需安装任何软件，浏览器打开链接即可
 - 所有"新建/编辑/填报"按钮跳转到飞书 Base 对应表，在飞书中操作
+
+### 手动同步（可选）
+
+如需立即刷新数据，在 GitHub Actions 页面手动触发 `Sync & Deploy` workflow 即可。
+
+也可本地运行（需设置环境变量 `FEISHU_APP_ID` 和 `FEISHU_APP_SECRET`）：
+
+```bash
+node scripts/sync-feishu-api.mjs
+```
 
 ### 已知限制
 
-1. **数据非实时**：飞书更新后需手动运行 `node scripts/sync-via-lark-cli.mjs`，再刷新浏览器
+1. **数据有延迟**：飞书更新后最长等 12 小时自动同步，或手动触发 workflow 立即同步
 2. **无看板级权限控制**：看板中所有按钮对所有用户可见（实际数据编辑在飞书 Base 侧控制）
-3. **飞书 Base 权限**：已创建 12 个团队角色并配置行级权限（`is_invalid=false`，已验证生效）。角色按「所属团队」字段过滤，每个团队只能编辑本团队记录。管理员需在飞书界面手动将成员分配到对应角色
+3. **飞书 Base 权限**：已创建 12 个团队角色并配置行级权限。管理员需在飞书界面将成员分配到对应角色
 
 ---
 
@@ -31,31 +43,13 @@
 
 ### 看数据（任何人）
 
-双击 `index.html`，浏览器打开即可。
+打开 `https://belindawang-lily.github.io/kanban-board/` 即可。
 
 ### 填报数据（所有队员）
 
 点击看板中的「新建目标」「填报新一期」「新增打卡」等按钮 → 跳转到飞书多维表格对应表 → 在飞书中操作。
 
 飞书 Base 地址：`https://qcnjj22jqvr1.feishu.cn/base/NVokbNXaca3oihspnCicYyccnVe`
-
-### 刷新看板（管理员）
-
-飞书中有数据更新后：
-
-```bash
-cd kanban-board
-node scripts/sync-via-lark-cli.mjs
-```
-
-然后刷新浏览器（Ctrl+F5）。前提：本机已安装并登录 lark-cli（`lark-cli auth status` 可查看状态）。
-
-### 更好的做法（可选）
-
-如果希望自动刷新，可选：
-- **定时同步**：用操作系统定时任务每隔 N 分钟运行一次同步脚本
-- **轻量服务器**：用 Node.js 起一个简单 HTTP 服务，每次请求时从飞书拉取最新数据（替代静态 data.js）
-- **飞书自动化**：在飞书 Base 中配置「工作流」触发器，数据变更时调用 webhook 通知管理员
 
 ---
 
@@ -126,7 +120,8 @@ kanban-board/
 │     ├─ data.js             # 数据快照（同步脚本覆盖）
 │     └─ app.js              # 数据层 + 共享组件 + 飞书跳转 + CSV 导出
 └─ scripts/
-   └─ sync-via-lark-cli.mjs  # 同步脚本（基于 lark-cli）
+   ├─ sync-feishu-api.mjs     # 同步脚本（飞书 API，GitHub Actions 用）
+   └─ sync-via-lark-cli.mjs   # 同步脚本（lark-cli，本地手动用）
 ```
 
 ---
@@ -146,17 +141,27 @@ Base 地址：`https://qcnjj22jqvr1.feishu.cn/base/NVokbNXaca3oihspnCicYyccnVe`
 
 ---
 
-## 六、同步脚本
+## 六、同步机制
+
+### 自动同步（GitHub Actions）
+
+`.github/workflows/sync-and-deploy.yml` 配置了定时任务：
+
+- 每天 08:00 和 20:00（北京时间）自动从飞书拉取数据，写入 `data.js` 并部署到 GitHub Pages
+- 也可在 GitHub Actions 页面手动触发 `Sync & Deploy` workflow
+- 依赖 GitHub Secrets：`FEISHU_APP_ID`、`FEISHU_APP_SECRET`
+
+### 本地手动同步
 
 ```bash
+# 方式1：飞书 API（需设置环境变量 FEISHU_APP_ID / FEISHU_APP_SECRET）
+node scripts/sync-feishu-api.mjs
+
+# 方式2：lark-cli（需本机已登录 lark-cli）
 node scripts/sync-via-lark-cli.mjs
 ```
 
-从飞书 Base 拉取 6 张表数据，映射为看板格式，写入 `assets/js/data.js`。
-
-- 前提：本机已安装 lark-cli 并登录
-- 团队归属：通过「所属团队」单选字段匹配队伍表记录
-- 进度格式：飞书百分比（小数 0.65）自动归一化为 0-100 整数
+团队归属通过「所属团队」单选字段匹配；进度格式自动归一化为 0-100 整数。
 
 ---
 
@@ -164,16 +169,17 @@ node scripts/sync-via-lark-cli.mjs
 
 ### 首次部署
 
-1. 安装 Node.js 18+
-2. 安装并登录 lark-cli
-3. 运行 `node scripts/sync-via-lark-cli.mjs` 生成 data.js
-4. 双击 `index.html` 打开看板
+已完成：
+1. 飞书 Base 创建 + 数据导入 + 权限配置
+2. 飞书自建应用创建 + 发布 + API 权限开通
+3. GitHub 仓库创建 + 代码推送 + Secrets 配置 + Pages 启用
+4. GitHub Actions 定时同步 + 自动部署
 
 ### 日常操作
 
 1. 队员在飞书 Base 中填报数据（双周报、打卡、更新 KR 进度等）
-2. 管理员运行同步脚本刷新看板
-3. 刷新浏览器查看最新数据
+2. 数据每天自动同步到看板，无需手动操作
+3. 如需立即刷新，在 GitHub Actions 页面手动触发 workflow
 
 ### 导出数据
 
