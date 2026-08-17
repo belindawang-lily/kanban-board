@@ -94,12 +94,8 @@
   };
   K.icon = (name, size = 18) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${icons[name] || ''}</svg>`;
 
-  /* ---------- 头像颜色 ---------- */
-  const palette = ['212 54% 24%', '32 91% 37%', '152 56% 40%', '199 70% 45%', '215 16% 40%', '0 60% 45%', '45 50% 35%'];
-  K.colorFor = (name) => {
-    let h = 0; for (let i = 0; i < String(name).length; i++) h = (h * 31 + name.charCodeAt(i)) & 0x7fffffff;
-    return palette[h % palette.length];
-  };
+  /* ---------- 统一配色（不按队伍随机分配） ---------- */
+  K.colorFor = () => 'var(--primary)';
   K.initials = (name) => {
     const s = String(name || '?');
     return /[\u4e00-\u9fa5]/.test(s) ? s.slice(-1) : s.slice(0, 1).toUpperCase();
@@ -177,12 +173,13 @@
       </aside>
       <div class="main">
         <header class="topbar">
-          <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">${K.icon('menu', 20)}</button>
-          <div class="page-title">
-            <h1>${K.escape(opts.title || '')}</h1>
-            ${opts.crumb ? `<div class="crumb">${opts.crumb}</div>` : ''}
+          <div class="topbar-left">
+            <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">${K.icon('menu', 20)}</button>
+            <div class="page-title">
+              <h1>${K.escape(opts.title || '')}</h1>
+              ${opts.crumb ? `<div class="crumb">${opts.crumb}</div>` : ''}
+            </div>
           </div>
-          <div class="topbar-spacer"></div>
           <div class="topbar-meta">
             <span class="sync-chip"><span class="dot ${meta.source === 'sample' ? 'sample' : ''}"></span>${K.escape(syncText)}</span>
             ${opts.tools || ''}
@@ -342,43 +339,29 @@
     </div>`;
   };
 
-  // 趋势折线图 — 用于双周报提交趋势
+  // 趋势柱状图 — 用于双周报提交趋势
   K.trendLine = function (data, opts) {
     opts = opts || {};
     if (!data.length) return '<div class="text-muted text-sm" style="padding:20px;text-align:center">暂无趋势数据</div>';
 
-    const w = opts.width || 100;
-    const h = opts.height || 80;
-    const max = Math.max(...data.map(d => d.value), 1);
-    const min = 0;
-    const range = max - min || 1;
+    const max = Math.max(...data.map(d => d.value), 100);
+    const barWidth = data.length > 1 ? 100 / data.length : 60;
+    const gap = 4;
 
-    const pointSpacing = data.length > 1 ? w / (data.length - 1) : 0;
-    const points = data.map((d, i) => ({
-      x: i * pointSpacing,
-      y: h - ((d.value - min) / range) * (h - 10) - 5,
-      ...d
-    }));
-
-    // 折线路径
-    const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
-    const areaPath = linePath + ` L ${points[points.length-1].x.toFixed(1)} ${h} L ${points[0].x.toFixed(1)} ${h} Z`;
-
-    const dots = points.map((p, i) => {
-      const isLast = i === points.length - 1;
-      return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${isLast ? 4 : 3}" class="trend-dot ${isLast ? 'active' : ''}"/>`;
+    const bars = data.map((d, i) => {
+      const h = Math.round(d.value / max * 100);
+      const isLatest = i === data.length - 1;
+      const fillClass = isLatest ? 'is-gold' : '';
+      return `<div class="tbar-col" style="width:${barWidth}%">
+        <div class="tbar-val">${d.value}%</div>
+        <div class="tbar-track">
+          <div class="tbar-fill ${fillClass}" style="height:${Math.max(2, h)}%"></div>
+        </div>
+        <div class="tbar-label">${K.escape(d.label || '')}</div>
+      </div>`;
     }).join('');
 
-    const labels = data.map(d => `<span>${K.escape(d.label || '')}</span>`).join('');
-
-    return `<div class="trend-chart">
-      <svg class="trend-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
-        <path d="${areaPath}" class="trend-area"/>
-        <path d="${linePath}" class="trend-line"/>
-        ${dots}
-      </svg>
-      <div class="trend-labels">${labels}</div>
-    </div>`;
+    return `<div class="trend-bars">${bars}</div>`;
   };
 
   /* ---------- 导出/打印 ---------- */

@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>总看板 · 投资管理训练营运营进度看板</title>
-  <link rel="stylesheet" href="assets/css/kanban.css">
+  <link rel="stylesheet" href="assets/css/kanban.css?v=2">
 </head>
 <body>
 <script src="assets/js/data.js"></script>
@@ -14,7 +14,7 @@
   const view = K.mount('overview', {
     title: '总看板',
     crumb: '全局汇总 · 各队伍现状一览',
-    tools: '<button class="btn btn-outline btn-sm" onclick="K.openFeishu()">' + K.icon('external', 15) + ' 打开飞书</button><button class="btn btn-gold btn-sm" onclick="location.href=\'quick-brief.html\'">' + K.icon('brief', 15) + ' 生成快报</button>'
+    tools: '<button class="btn btn-outline btn-sm" onclick="K.openFeishu()">' + K.icon('external', 15) + ' 飞书</button><button class="btn btn-gold btn-sm" onclick="location.href=\'quick-brief.html\'">' + K.icon('brief', 15) + ' 快报</button>'
   });
 
   const D = K.data;
@@ -42,7 +42,6 @@
   // 打卡 Top
   const checkinTop = teams.map(t => ({ t, n: K.checkinCount(t.id) })).sort((a, b) => b.n - a.n).slice(0, 6);
   const maxChk = Math.max(1, ...checkinTop.map(x => x.n));
-  const checkinParticipants = new Set(checkins.flatMap(c => [...(c.teamParticipantIds || []), ...(c.volunteerParticipantIds || [])]));
 
   // KR 状态分布（环形图数据）
   const statusColors = {
@@ -75,17 +74,17 @@
   // ===== 分区一：核心指标 =====
   html += '<div class="section-title"><h2>核心指标</h2><span class="hint">训练营整体运营概览</span></div>';
   html += '<div class="stat-grid mb-4">';
-  html += K.statCard({ label: '队伍总数', value: teams.length, foot: `运转中 ${teams.filter(t => t.status === '运转中').length} 支`, ico: K.icon('users', 16), icoColor: '214 42% 20%' });
-  html += K.statCard({ label: '成员总数', value: members.length, foot: `成员${idStats[0].count} · 志愿者${idStats[1].count} · 导师${idStats[2].count + idStats[3].count}`, ico: K.icon('users', 16), icoColor: '214 42% 20%' });
-  html += K.statCard({ label: 'OKR 平均进度', value: avgProgress, unit: '%', foot: `${doingKRs} 个 KR 进行中 · ${doneKRs} 个已完成`, ico: K.icon('target', 16), icoColor: '41 42% 52%', variant: 'gold' });
-  html += K.statCard({ label: '本期双周报', value: `${submittedTeamIds.size}/${teams.length}`, foot: `${latestLabel} · 提交率 ${submitRate}%`, ico: K.icon('report', 16), icoColor: '214 42% 20%' });
-  html += K.statCard({ label: '打卡活动', value: checkins.length, foot: `覆盖 ${checkinParticipants.size} 人次参与`, ico: K.icon('camera', 16), icoColor: '41 42% 52%', variant: 'gold' });
-  html += K.statCard({ label: '有风险 KR', value: riskKRs, foot: riskKRs ? '需关注，见 OKR 管理' : '暂无风险项', ico: K.icon('alert', 16), icoColor: '0 65% 45%', variant: riskKRs ? 'risk' : 'done' });
+  html += K.statCard({ label: '队伍总数', value: teams.length, unit: '支', foot: '全部运转中' });
+  html += K.statCard({ label: '成员总数', value: members.length, unit: '人', foot: '成员 ' + idStats[0].count + ' · 导师 ' + (idStats[2].count + idStats[3].count) });
+  html += K.statCard({ label: 'OKR 平均进度', value: avgProgress, unit: '%', foot: doneKRs + ' 已完成 · ' + doingKRs + ' 进行中', variant: 'gold' });
+  html += K.statCard({ label: '本期双周报', value: submittedTeamIds.size + '/' + teams.length, foot: latestLabel + ' · 提交率 ' + submitRate + '%' });
+  html += K.statCard({ label: '打卡活动', value: checkins.length, unit: '次', foot: '覆盖 ' + new Set(checkins.flatMap(c => c.teamParticipantIds || [])).size + ' 人次', variant: 'gold' });
+  html += K.statCard({ label: '有风险 KR', value: riskKRs, unit: '个', foot: riskKRs ? '需关注' : '暂无风险', variant: riskKRs ? 'risk' : 'done' });
   html += '</div>';
 
   // ===== 分区二：数据可视化 =====
   html += '<div class="section-title"><h2>数据洞察</h2><span class="hint">OKR 分布 · 打卡热力 · 提交趋势</span></div>';
-  html += '<div class="grid mb-4" style="grid-template-columns: 1fr 1.3fr 1fr">';
+  html += '<div class="grid mb-4" style="grid-template-columns: 1fr 1.4fr 1fr">';
 
   // OKR 状态分布（环形图）
   html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>OKR 状态分布</h2><div class="head-spacer"></div><span class="text-muted text-sm">共 ' + krs.length + ' 个 KR</span></div>';
@@ -95,7 +94,7 @@
   // 打卡热力图
   html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>打卡活跃度热力图</h2><div class="head-spacer"></div><span class="text-muted text-sm">近 12 周</span></div>';
   html += K.heatmap(checkins, { weeks: 12 });
-  html += '<div class="flex items-center gap-3 mt-3" style="font-size:10px;color:hsl(var(--muted-foreground))"><span>少</span>';
+  html += '<div class="flex items-center gap-2 mt-3" style="font-size:10px;color:hsl(var(--muted-foreground))"><span>少</span>';
   html += '<div class="heatmap-cell" style="width:12px;height:12px"></div>';
   html += '<div class="heatmap-cell l1" style="width:12px;height:12px"></div>';
   html += '<div class="heatmap-cell l2" style="width:12px;height:12px"></div>';
@@ -107,8 +106,8 @@
   // 双周报提交趋势
   html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>双周报提交趋势</h2><div class="head-spacer"></div><span class="text-muted text-sm">提交率 %</span></div>';
   if (trendData.length) {
-    html += K.trendLine(trendData, { width: 100, height: 80 });
-    html += '<div class="mt-3 text-sm" style="color:hsl(var(--muted-foreground))">最新一期提交率 <strong style="color:hsl(var(--gold-deep))">' + (trendData[trendData.length-1].value) + '%</strong>（' + trendData[trendData.length-1].teamCount + '/' + teams.length + ' 支队伍）</div>';
+    html += K.trendLine(trendData);
+    html += '<div class="mt-3 text-sm" style="color:hsl(var(--muted-foreground))">最新一期 <strong style="color:hsl(var(--gold-deep))">' + trendData[trendData.length-1].value + '%</strong>（' + trendData[trendData.length-1].teamCount + '/' + teams.length + ' 支队伍）</div>';
   } else {
     html += '<div class="text-muted text-sm" style="padding:20px;text-align:center">暂无趋势数据</div>';
   }
@@ -119,19 +118,19 @@
   html += '<div class="section-title"><h2>队伍进度与活跃度</h2><span class="hint">点击队伍行查看 OKR 详情</span></div>';
   html += '<div class="grid mb-4" style="grid-template-columns: 1.9fr 1fr">';
   // 各队 OKR 进度表
-  html += '<div class="card card-flush"><div class="card-head"><h2>各队 OKR 进度总览</h2><div class="head-spacer"></div><span class="text-muted text-sm">平均进度 ' + avgProgress + '% · 共 ' + krs.length + ' 个 KR</span></div><div class="card-body"><div class="table-wrap"><table class="table"><thead><tr><th style="white-space:nowrap">队伍</th><th style="white-space:nowrap">队长</th><th class="text-right" style="white-space:nowrap">成员</th><th style="min-width:160px">OKR 进度</th><th class="text-right" style="white-space:nowrap">KR</th><th style="white-space:nowrap">最新双周报</th><th class="text-right" style="white-space:nowrap">打卡</th><th style="white-space:nowrap">状态</th></tr></thead><tbody>';
+  html += '<div class="card card-flush"><div class="card-head"><h2>各队 OKR 进度总览</h2><div class="head-spacer"></div><span class="text-muted text-sm">平均 ' + avgProgress + '% · 共 ' + krs.length + ' KR</span></div><div class="card-body"><div class="table-wrap"><table class="table"><thead><tr><th style="min-width:70px">队伍</th><th style="min-width:80px">队长</th><th class="text-right" style="min-width:40px">成员</th><th style="min-width:140px">OKR 进度</th><th class="text-right" style="min-width:36px">KR</th><th style="min-width:80px">最新双周报</th><th class="text-right" style="min-width:40px">打卡</th><th style="min-width:56px">状态</th></tr></thead><tbody>';
   teams.forEach(t => {
     const prog = K.teamProgress(t.id);
     const tkrs = K.krs(t.id);
     const rep = K.latestReport(t.id);
     const row = `location.href='okr.html?team=${t.id}'`;
-    html += `<tr class="row-link" onclick="${row}" style="cursor:pointer">`;
-    html += `<td class="cell-strong" style="white-space:nowrap">${K.escape(t.name)}</td>`;
-    html += `<td><div class="flex items-center gap-2" style="white-space:nowrap">${K.avatar(t.leader, 'sm')}<span class="text-sm">${K.escape(t.leader)}</span></div></td>`;
+    html += `<tr class="row-link" onclick="${row}">`;
+    html += `<td class="cell-strong nowrap">${K.escape(t.name)}</td>`;
+    html += `<td><div class="flex items-center gap-2 nowrap">${K.avatar(t.leader, 'sm')}<span class="text-sm">${K.escape(t.leader)}</span></div></td>`;
     html += `<td class="text-right tnum">${t.memberCount}</td>`;
     html += `<td>${K.progressHtml(prog, prog === 100 ? '已完成' : prog === 0 ? '未开始' : '进行中')}</td>`;
     html += `<td class="text-right tnum">${tkrs.length}</td>`;
-    html += `<td class="cell-muted text-sm" style="white-space:nowrap">${rep ? K.escape(rep.period) : '<span class="text-muted">未提交</span>'}</td>`;
+    html += `<td class="cell-muted text-sm nowrap">${rep ? K.escape(rep.period) : '<span class="text-muted">未提交</span>'}</td>`;
     html += `<td class="text-right tnum">${K.checkinCount(t.id)}</td>`;
     html += `<td><span class="chip">${K.escape(t.status)}</span></td>`;
     html += '</tr>';
@@ -142,11 +141,10 @@
   html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 14px;border:none"><h2>打卡活跃度 Top 6</h2><div class="head-spacer"></div><span class="text-muted text-sm">按打卡次数</span></div>';
   checkinTop.forEach(x => {
     const pct = Math.round(x.n / maxChk * 100);
-    const col = K.colorFor(x.t.name);
     html += `<div class="progress mb-2" style="gap:10px">`;
-    html += `<span class="text-sm" style="width:90px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${K.escape(x.t.name)}">${K.escape(x.t.name)}</span>`;
-    html += `<div class="pbar" style="height:10px"><div class="pfill" style="width:${Math.max(3, pct)}%;background:hsl(${col})"></div></div>`;
-    html += `<div class="pval" style="min-width:28px">${x.n}</div>`;
+    html += `<span class="text-sm" style="width:60px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${K.escape(x.t.name)}">${K.escape(x.t.name)}</span>`;
+    html += `<div class="pbar" style="height:8px"><div class="pfill" style="width:${Math.max(3, pct)}%"></div></div>`;
+    html += `<div class="pval" style="min-width:24px">${x.n}</div>`;
     html += `</div>`;
   });
   html += '</div>';
@@ -172,10 +170,7 @@
 
   // 身份参与统计
   html += '<div class="card card-pad"><div class="card-head" style="padding:0 0 12px;border:none"><h2>身份参与统计</h2><div class="head-spacer"></div><span class="text-muted text-sm">按打卡参与人次</span></div>';
-  html += '<div class="legend mb-3">';
-  donutData.forEach(d => html += `<span class="lg"><span class="lg-sw" style="background:hsl(${d.color})"></span>${K.escape(d.label)} ${d.value}</span>`);
-  html += '</div>';
-  html += '<div class="table-wrap"><table class="table"><thead><tr><th>身份</th><th class="text-right">人数</th><th class="text-right">参与人次</th><th style="min-width:120px">占比</th></tr></thead><tbody>';
+  html += '<div class="table-wrap"><table class="table"><thead><tr><th>身份</th><th class="text-right">人数</th><th class="text-right">参与人次</th><th style="min-width:100px">占比</th></tr></thead><tbody>';
   const totalPart = idStats.reduce((a, x) => a + x.participation, 0) || 1;
   idStats.forEach(x => {
     const pct = Math.round(x.participation / totalPart * 100);
@@ -189,3 +184,4 @@
 </script>
 </body>
 </html>
+
