@@ -1,11 +1,11 @@
-// 由 sync-feishu-api.mjs 自动同步：2026/10/1 00:13:06
+// 由 sync-feishu-api.mjs 自动同步：2026/10/2 00:50:15
 // 数据来源：飞书开放平台 API（GitHub Actions 自动同步）
 window.KANBAN_DATA = {
   "meta": {
     "campName": "澎π计划AI训练营",
     "cycleStart": "2026-07-15",
     "cycleEnd": "2027-03-31",
-    "syncedAt": "2026/10/1 00:13:06",
+    "syncedAt": "2026/10/2 00:50:15",
     "source": "feishu-api (GitHub Actions)",
     "note": "由 scripts/sync-feishu-api.mjs 从飞书开放平台 API 同步。"
   },
@@ -2088,7 +2088,7 @@ window.KANBAN_DATA = {
         {
           "token": "LruSbI65RopJATxp5aAcEonZn8g",
           "name": "广发证券大厦图-2.jpg",
-          "link": "https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=NzMyMzdmZWJmNzA1OTgxNzAxYzY2MjMyOWFkMzVjNTRfOTNlZjllNTg3YTg1ZmFlYWRkMTFmMGNkYzA4MDY1MDdfSUQ6NzY3NDg5NzYyOTMwMTgwNDMwNl8xNzkwNzg0Nzg1OjE3OTA4NzExODVfVjM"
+          "link": "https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=OGU5YTFiNDMzYTQyYmU4OTdjMTlmZjhmNzQ5MGJiMWVfOGI4NWYzMjI0YTAxNDljMjVmYzk4MzY5Y2RjMGNjMmFfSUQ6NzY3NDg5NzYyOTMwMTgwNDMwNl8xNzkwODczNDEzOjE3OTA5NTk4MTNfVjM"
         }
       ],
       "teamParticipantIds": [
@@ -2169,7 +2169,7 @@ window.KANBAN_DATA = {
         {
           "token": "CkfLb6zlgo8odixfUIacogZNnCb",
           "name": "image.png",
-          "link": "https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=MWViYzVjN2ZiZjA5MGY4NTBlMGUxNzQ0ZDk2Yjc5NzhfZWY4Mzk2ODA2ZmEzNjRhY2YyZmY1NWNjNWUxNTk2MTJfSUQ6NzY3NDg5NzgyMjg3NzI0MDYxOF8xNzkwNzg0Nzg1OjE3OTA4NzExODVfVjM"
+          "link": "https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=YTY4YWVlYzI4Zjc5YTM0Y2ZkMTQ4OGMxMTcwNTcxYTJfNDE2ZGQxYTdkYWRkN2JjZWE4NjRjMWFlODY3YWQ5OTVfSUQ6NzY3NDg5NzgyMjg3NzI0MDYxOF8xNzkwODczNDE0OjE3OTA5NTk4MTRfVjM"
         }
       ],
       "teamParticipantIds": [
@@ -2342,7 +2342,7 @@ window.KANBAN_DATA = {
         {
           "token": "HgQkb15yeoe151xIVH0cxPzKnPb",
           "name": "image.png",
-          "link": "https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=YzExYWMyYzQxZjYzOWFkOGQ0OGEzMjhiYzVhZGU2ZjNfZmQ0ZTY2NWNmYTlkMjBmNDgwMzRiM2U2MzI3ZjA0ZDJfSUQ6NzY3NDg5OTYwMDA3OTM1ODkzMl8xNzkwNzg0Nzg2OjE3OTA4NzExODZfVjM"
+          "link": "https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/authcode/?code=YWVlOTUxMGZmYzNhYmMyOTlmNzM1MzlmMzhiMDcxY2NfNjQxY2E4NDRkM2ZhMDA4NmE0OTdjNzViMDE3MzRhOTVfSUQ6NzY3NDg5OTYwMDA3OTM1ODkzMl8xNzkwODczNDE1OjE3OTA5NTk4MTVfVjM"
         }
       ],
       "teamParticipantIds": [
